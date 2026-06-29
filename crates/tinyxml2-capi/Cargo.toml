@@ -10,7 +10,6 @@ homepage.workspace = true
 authors.workspace = true
 keywords = ["xml", "ffi", "c-api", "tinyxml2"]
 categories = ["external-ffi-bindings"]
-publish = false
 
 [lib]
 # Produce both static and shared C libraries
