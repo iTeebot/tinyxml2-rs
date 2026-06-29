@@ -64,14 +64,12 @@ The `tinyxml2` core crate is organized into the following modules. Modules marke
 |--------|------|----------------|
 | `lib` | `lib.rs` | Crate root. Public API surface, re-exports, `Whitespace` enum, `ParseOptions` builder. |
 | `error` | `error.rs` | `XmlError` enum, `ParseErrorKind`, `Result<T>` alias. Every TinyXML2 error code has a corresponding variant. Parse errors carry line numbers. Implements `std::error::Error`, `Display`, `Clone`, `PartialEq`. |
-| `entity` | `entity.rs` | XML entity encoding and decoding. The 5 predefined named entities (`&amp;`, `&lt;`, `&gt;`, `&quot;`, `&apos;`), decimal numeric references (`&#N;`), and hexadecimal numeric references (`&#xN;`). Provides `Cow`-returning variants to avoid allocation when no entities are present. |
+| `entity` | `entity.rs` | XML entity encoding and decoding. The 5 predefined named entities (`&amp;`, `&lt;`, `&gt;`, `&quot;`, `&apos;`), decimal numeric references (`&#N;`), and hexadecimal numeric references (`&#xN;`). Provides `Cow`-returning variants to avoid allocation when no entities are present. Also implements `decode_numeric_only`. |
 | `arena` | `arena.rs` | Generational arena allocator. `Arena<T>`, `NodeId`, `Slot<T>` (occupied/vacant enum), free list, generation counters, iterators. Foundation of the entire DOM memory model. |
-| `node` | *(planned)* | `NodeData` enum (the `T` in `Arena<T>`). Variants for Element, Text, Comment, Declaration, Unknown, CData. Stores parent/child/sibling `NodeId` links. |
-| `document` | *(planned)* | `Document` struct. Owns the `Arena<NodeData>`, holds the root node ID, parse options, and error state. Entry point for parsing and serialization. |
-| `element` | *(planned)* | Element-specific API. Attribute access, child traversal, text content helpers. Methods mirror TinyXML2's `XMLElement`. |
-| `attribute` | *(planned)* | `Attribute` struct. Name-value pair with typed query methods (`int_value()`, `float_value()`, `bool_value()`). Stored inline on elements as a `Vec<Attribute>`. |
-| `text` | *(planned)* | Text node API. CData flag, whitespace handling integration, entity decoding at read time. |
-| `parser` | *(planned)* | Recursive-descent XML parser. Consumes `&str`, builds `NodeData` entries directly into the arena. Line tracking, entity resolution, depth limiting. |
+| `node` | `node.rs` | `NodeData` struct, `NodeKind` enum, `Attribute`, `ElementData`, and `TextData` structs. Stores parent/child/sibling `NodeId` links. |
+| `document` | `document.rs` | `Document` struct. Owns the `Arena<NodeData>`, holds the root node ID, parse options, has_bom, and error state. |
+| `typed` | `typed.rs` | Typed attribute and text parsing implementations on `Document` (e.g., `query_int_attribute`, `int_text`). |
+| `parser` | `parser.rs` | Recursive-descent XML parser. Consumes valid UTF-8 strings and builds `NodeData` entries directly into the arena. Line tracking, entity resolution, depth limiting. |
 | `writer` | *(planned)* | Dual-mode serializer. Visitor-based DOM printer and standalone streaming writer. Pretty-print and compact modes with configurable indentation. |
 | `visitor` | *(planned)* | `XmlVisitor` trait. Depth-first traversal with `visit_enter`/`visit_exit` callbacks for each node type, matching TinyXML2's `XMLVisitor`. |
 | `handle` | *(planned)* | `XmlHandle` convenience wrapper. Chainable navigation (`first_child_element()`, `next_sibling_element()`) that returns another handle instead of `Option`, matching TinyXML2's `XMLHandle`. |

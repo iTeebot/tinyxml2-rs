@@ -1,8 +1,10 @@
 //! XML document container and DOM tree manipulation.
 
+use crate::ParseOptions;
 use crate::arena::{Arena, NodeId};
 use crate::error::{Result, XmlError};
 use crate::node::{Attribute, ElementData, NodeData, NodeKind, TextData};
+use crate::parser::Parser;
 
 /// The main XML document container.
 ///
@@ -12,6 +14,8 @@ pub struct Document {
     pub(crate) arena: Arena<NodeData>,
     root: NodeId,
     error: Option<XmlError>,
+    options: ParseOptions,
+    has_bom: bool,
 }
 
 impl Document {
@@ -24,6 +28,22 @@ impl Document {
             arena,
             root,
             error: None,
+            options: ParseOptions::default(),
+            has_bom: false,
+        }
+    }
+
+    /// Creates a new, empty XML document with custom parse options.
+    #[must_use]
+    pub fn with_options(options: ParseOptions) -> Self {
+        let mut arena = Arena::new();
+        let root = arena.alloc(NodeData::new(NodeKind::Document, 1));
+        Self {
+            arena,
+            root,
+            error: None,
+            options,
+            has_bom: false,
         }
     }
 
@@ -31,6 +51,18 @@ impl Document {
     #[must_use]
     pub const fn root(&self) -> NodeId {
         self.root
+    }
+
+    /// Returns the kind of the specified node, if it exists.
+    #[must_use]
+    pub fn node_kind(&self, node: NodeId) -> Option<&NodeKind> {
+        self.arena.get(node).map(|d| &d.kind)
+    }
+
+    /// Returns the 1-based source line number where this node was parsed.
+    #[must_use]
+    pub fn line_num(&self, node: NodeId) -> Option<u32> {
+        self.arena.get(node).map(|d| d.line_num)
     }
 
     /// Returns the current error state of the document, if any.
@@ -46,7 +78,6 @@ impl Document {
     }
 
     /// Sets the error state of the document.
-    #[allow(dead_code)]
     pub(crate) fn set_error(&mut self, err: XmlError) {
         self.error = Some(err);
     }
@@ -55,7 +86,99 @@ impl Document {
     pub fn clear(&mut self) {
         self.arena.clear();
         self.error = None;
+        self.has_bom = false;
         self.root = self.arena.alloc(NodeData::new(NodeKind::Document, 1));
+    }
+
+    /// Returns whether a Byte Order Mark (BOM) was detected during parsing.
+    #[must_use]
+    pub const fn has_bom(&self) -> bool {
+        self.has_bom
+    }
+
+    /// Sets whether to output a Byte Order Mark (BOM) when serializing.
+    pub fn set_bom(&mut self, use_bom: bool) {
+        self.has_bom = use_bom;
+    }
+
+    /// Returns a reference to the document's parse options.
+    #[must_use]
+    pub const fn options(&self) -> &ParseOptions {
+        &self.options
+    }
+
+    /// Returns a mutable reference to the document's parse options.
+    pub fn options_mut(&mut self) -> &mut ParseOptions {
+        &mut self.options
+    }
+
+    // --- Parsing Entry Points ---
+
+    /// Parses an XML document from a string slice in place.
+    ///
+    /// Any existing DOM structure is cleared.
+    pub fn parse_str(&mut self, xml: &str) -> Result<()> {
+        self.clear();
+
+        // Detect and skip BOM
+        let (xml_after_bom, had_bom) = crate::util::strip_bom(xml);
+        self.has_bom = had_bom;
+
+        let mut parser = Parser::new(xml_after_bom, self.options.clone());
+        match parser.parse_document(self) {
+            Ok(()) => Ok(()),
+            Err(e) => {
+                self.set_error(e.clone());
+                Err(e)
+            }
+        }
+    }
+
+    /// Parses an XML document from a byte slice in place.
+    ///
+    /// Rejects non-UTF-8 inputs. Any existing DOM structure is cleared.
+    pub fn parse_bytes_mut(&mut self, bytes: &[u8]) -> Result<()> {
+        let s = std::str::from_utf8(bytes).map_err(|e| {
+            let err = XmlError::Parse {
+                kind: crate::error::ParseErrorKind::General,
+                line: 1,
+                message: Some(format!("Invalid UTF-8 sequence: {e}")),
+            };
+            self.set_error(err.clone());
+            err
+        })?;
+        self.parse_str(s)
+    }
+
+    /// Loads and parses an XML file from the given path in place.
+    ///
+    /// Any existing DOM structure is cleared.
+    pub fn load_file_mut(&mut self, path: impl AsRef<std::path::Path>) -> Result<()> {
+        let bytes = std::fs::read(path)?;
+        self.parse_bytes_mut(&bytes)
+    }
+
+    /// Parses an XML document from a string slice, returning the new Document.
+    pub fn parse(xml: &str) -> Result<Self> {
+        let mut doc = Self::new();
+        doc.parse_str(xml)?;
+        Ok(doc)
+    }
+
+    /// Parses an XML document from a byte slice, returning the new Document.
+    ///
+    /// Rejects non-UTF-8 inputs.
+    pub fn parse_bytes(bytes: &[u8]) -> Result<Self> {
+        let mut doc = Self::new();
+        doc.parse_bytes_mut(bytes)?;
+        Ok(doc)
+    }
+
+    /// Loads and parses an XML file from the given path, returning the new Document.
+    pub fn load_file(path: impl AsRef<std::path::Path>) -> Result<Self> {
+        let mut doc = Self::new();
+        doc.load_file_mut(path)?;
+        Ok(doc)
     }
 
     // --- Factory Methods ---

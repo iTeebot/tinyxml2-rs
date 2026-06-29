@@ -49,6 +49,7 @@ pub mod document;
 pub mod entity;
 pub mod error;
 pub mod node;
+pub(crate) mod parser;
 pub mod typed;
 pub mod util;
 
