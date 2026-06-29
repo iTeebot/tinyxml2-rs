@@ -28,7 +28,7 @@ are strongly encouraged to upgrade to the latest release.
 
 If you discover a security vulnerability in tinyxml2-rs, **please report it responsibly**.
 
-📧 **Email:** [security@teebot.dev](mailto:security@teebot.dev)
+📧 **Email:** [security-tinyxmls2-rs@iteebot.com](mailto:security-tinyxmls2-rs@iteebot.com)
 
 > [!CAUTION]
 > **Do NOT open a public GitHub issue for security vulnerabilities.** Public disclosure before
@@ -101,7 +101,7 @@ The following are **not** covered by this security policy:
 
 We follow a **coordinated disclosure** model:
 
-1. **Report** — You privately report the vulnerability to [security@teebot.dev](mailto:security@teebot.dev).
+1. **Report** — You privately report the vulnerability to [security-tinyxmls2-rs@iteebot.com](mailto:security-tinyxmls2-rs@iteebot.com).
 2. **Triage & Fix** — We work with you to understand, reproduce, and fix the issue.
 3. **Release** — A patched version is released and a security advisory is published.
 4. **Public Disclosure** — Full details are made public after the fix is available.
