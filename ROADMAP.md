@@ -17,7 +17,7 @@ one and is designed to produce a shippable, testable increment.
 |-------|------------------------------|------------|----------------|
 | 1     | Foundation                   | Medium     | ✅ **Completed** |
 | 2     | DOM Core                     | High       | ✅ **Completed** |
-| 3     | XML Parser                   | High       | 🔲 Planned     |
+| 3     | XML Parser                   | High       | ✅ **Completed** |
 | 4     | Writer / Serializer          | Medium     | 🔲 Planned     |
 | 5     | Visitor Pattern & Ergonomics | Medium     | 🔲 Planned     |
 | 6     | C API (`tinyxml2-capi`)      | Medium     | 🔲 Planned     |
@@ -72,21 +72,21 @@ one and is designed to produce a shippable, testable increment.
 
 ### Key Deliverables
 
-- [ ] **Node type enum** — `XmlNode` variants: `Document`, `Element`, `Text`, `Comment`,
+- [x] **Node type enum** — `XmlNode` variants: `Document`, `Element`, `Text`, `Comment`,
   `Declaration`, `ProcessingInstruction`, `Unknown`. Each variant holds type-specific data.
-- [ ] **`Document` root** — The top-level container. Owns the arena. Provides `new()`,
+- [x] **`Document` root** — The top-level container. Owns the arena. Provides `new()`,
   `load_file()`, `save_file()`, and the `root_element()` accessor.
-- [ ] **`Element` operations** — `name()`, `set_name()`, attribute CRUD (`set_attribute`,
+- [x] **`Element` operations** — `name()`, `set_name()`, attribute CRUD (`set_attribute`,
   `find_attribute`, `delete_attribute`), child element queries (`first_child_element`,
   `next_sibling_element` with optional name filter).
-- [ ] **`Attribute` storage** — Linked-list of attributes per element, supporting typed getters
+- [x] **`Attribute` storage** — Linked-list of attributes per element, supporting typed getters
   (`int_value`, `float_value`, `bool_value`) with fallback defaults, mirroring the C++ API.
-- [ ] **Tree operations** — `insert_first_child`, `insert_end_child`, `insert_after_node`,
+- [x] **Tree operations** — `insert_first_child`, `insert_end_child`, `insert_after_node`,
   `delete_child`, `delete_children`. All operations maintain parent/child/sibling pointer
   consistency within the arena.
-- [ ] **Deep cloning** — `deep_clone(node, target_document)` that recursively copies a subtree,
+- [x] **Deep cloning** — `deep_clone(node, target_document)` that recursively copies a subtree,
   including across documents (re-allocating into the target arena).
-- [ ] **Memory management** — `Document::clear()` to reset the arena. Individual node deletion
+- [x] **Memory management** — `Document::clear()` to reset the arena. Individual node deletion
   with generation bump to invalidate stale `NodeId` handles.
 
 ### Estimated Test Count: 120–150 unit tests
@@ -117,20 +117,20 @@ struct, enabling O(1) traversal without pointer chasing outside the arena.
 
 ### Key Deliverables
 
-- [ ] **Recursive-descent parser** — Hand-written parser (no parser combinators or generated code)
+- [x] **Recursive-descent parser** — Hand-written parser (no parser combinators or generated code)
   operating on `&[u8]` input. Matches TinyXML2's parsing strategy for behavioral compatibility.
-- [ ] **Entity resolution** — Inline expansion of the five predefined entities and numeric
+- [x] **Entity resolution** — Inline expansion of the five predefined entities and numeric
   character references during text and attribute value parsing (leveraging Phase 1 entity module).
-- [ ] **Whitespace handling** — Two modes mirroring TinyXML2:
+- [x] **Whitespace handling** — Two modes mirroring TinyXML2:
   - `PRESERVE_WHITESPACE` — Keep all whitespace as-is.
   - `COLLAPSE_WHITESPACE` — Collapse runs of whitespace to a single space, trim leading/trailing.
-- [ ] **BOM detection** — Auto-detect and skip UTF-8 BOM (`0xEF 0xBB 0xBF`) at the start of
+- [x] **BOM detection** — Auto-detect and skip UTF-8 BOM (`0xEF 0xBB 0xBF`) at the start of
   input. Reject non-UTF-8 BOMs with a clear error.
-- [ ] **Depth limits** — Configurable maximum nesting depth (default: 100) to prevent stack
+- [x] **Depth limits** — Configurable maximum nesting depth (default: 100) to prevent stack
   overflow on malicious input. Returns `XmlError::ElementDepthExceeded` on violation.
-- [ ] **Error recovery** — Rich error reporting with byte offset, line number, and column number.
+- [x] **Error recovery** — Rich error reporting with byte offset, line number, and column number.
   No panic paths.
-- [ ] **Parse entry points** — `Document::parse(xml: &str)`, `Document::load_file(path)`,
+- [x] **Parse entry points** — `Document::parse(xml: &str)`, `Document::load_file(path)`,
   `Document::parse_bytes(bytes: &[u8])`.
 
 ### Parser Architecture

@@ -88,6 +88,70 @@ pub fn decode_cow(input: &str) -> std::borrow::Cow<'_, str> {
     std::borrow::Cow::Owned(decode(input))
 }
 
+/// Decodes ONLY numeric character references in a string, leaving named entities (like `&amp;`) as-is.
+///
+/// This is used when entity processing is disabled (`ParseOptions::process_entities = false`),
+/// in which case TinyXML2 still decodes numeric character references.
+#[must_use]
+pub fn decode_numeric_only(input: &str) -> String {
+    let mut output = String::with_capacity(input.len());
+    let chars = input.as_bytes();
+    let mut i = 0;
+
+    while i < chars.len() {
+        if chars[i] == b'&' {
+            if let Some((decoded_char, consumed)) = try_decode_numeric_entity(&chars[i..]) {
+                output.push(decoded_char);
+                i += consumed;
+                continue;
+            }
+        }
+        output.push(chars[i] as char);
+        i += 1;
+    }
+
+    output
+}
+
+/// Attempts to decode a single numeric entity reference starting at the given byte slice.
+fn try_decode_numeric_entity(bytes: &[u8]) -> Option<(char, usize)> {
+    debug_assert!(bytes[0] == b'&');
+
+    // Find the semicolon
+    let semi_pos = bytes.iter().position(|&b| b == b';')?;
+
+    // Must have at least `&#N;` (4 bytes)
+    if semi_pos < 3 {
+        return None;
+    }
+
+    let entity_body = &bytes[1..semi_pos];
+    let consumed = semi_pos + 1;
+
+    // Check numeric references only
+    if entity_body.first() == Some(&b'#') {
+        let num_body = &entity_body[1..];
+        let code_point = if num_body.first() == Some(&b'x') || num_body.first() == Some(&b'X') {
+            // Hexadecimal: &#xNN;
+            let hex_str = std::str::from_utf8(&num_body[1..]).ok()?;
+            u32::from_str_radix(hex_str, 16).ok()?
+        } else {
+            // Decimal: &#NN;
+            let dec_str = std::str::from_utf8(num_body).ok()?;
+            dec_str.parse::<u32>().ok()?
+        };
+
+        // Validate: must be a valid Unicode scalar value and not U+0000
+        if code_point == 0 {
+            return None;
+        }
+        let c = char::from_u32(code_point)?;
+        return Some((c, consumed));
+    }
+
+    None
+}
+
 /// Attempts to decode a single entity reference starting at the given byte slice.
 ///
 /// Returns `Some((char, bytes_consumed))` if a valid entity was decoded,
@@ -117,28 +181,7 @@ fn try_decode_entity(bytes: &[u8]) -> Option<(char, usize)> {
     }
 
     // Check numeric references
-    if entity_body.first() == Some(&b'#') {
-        let num_body = &entity_body[1..];
-        let code_point = if num_body.first() == Some(&b'x') || num_body.first() == Some(&b'X') {
-            // Hexadecimal: &#xNN;
-            let hex_str = std::str::from_utf8(&num_body[1..]).ok()?;
-            u32::from_str_radix(hex_str, 16).ok()?
-        } else {
-            // Decimal: &#NN;
-            let dec_str = std::str::from_utf8(num_body).ok()?;
-            dec_str.parse::<u32>().ok()?
-        };
-
-        // Validate: must be a valid Unicode scalar value and not U+0000
-        if code_point == 0 {
-            return None;
-        }
-        let c = char::from_u32(code_point)?;
-        return Some((c, consumed));
-    }
-
-    // Unrecognized entity — return None to leave it as-is
-    None
+    try_decode_numeric_entity(bytes)
 }
 
 /// Encodes special XML characters in text content.
@@ -381,5 +424,13 @@ mod tests {
         assert_eq!(encoded, "&amp;&lt;&gt;&quot;&apos;");
         let decoded = decode(&encoded);
         assert_eq!(decoded, original);
+    }
+
+    #[test]
+    fn decode_numeric_only_behavior() {
+        assert_eq!(decode_numeric_only("a &amp; b"), "a &amp; b");
+        assert_eq!(decode_numeric_only("a &#65; b"), "a A b");
+        assert_eq!(decode_numeric_only("a &#x41; b"), "a A b");
+        assert_eq!(decode_numeric_only("a &#x1F600; &amp;"), "a 😀 &amp;");
     }
 }

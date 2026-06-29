@@ -181,17 +181,17 @@ Benchmarks are tracked in `crates/tinyxml2-bench/` using [Criterion](https://git
 
 ## Project Status
 
-> **Phase 1 — Foundation** (active development)
+> **Phase 4 — Writer / Serializer** (planned)
 
-tinyxml2-rs is in early development. The core architecture is established, but the API is not yet stable. See [ROADMAP.md](ROADMAP.md) for the full development plan.
+tinyxml2-rs is under active development. The core DOM representation and recursive-descent parser are fully implemented. See [ROADMAP.md](ROADMAP.md) for the full development plan.
 
 | Milestone | Status |
 |-----------|--------|
 | Project scaffolding & architecture | ✅ Complete |
-| Error types & entity handling | 🚧 In progress |
-| Arena-based DOM | 🚧 In progress |
-| Recursive descent parser | ⬚ Planned |
-| XML writer (compact + pretty) | ⬚ Planned |
+| Error types & entity handling | ✅ Complete |
+| Arena-based DOM | ✅ Complete |
+| Recursive descent parser | ✅ Complete |
+| XML writer (compact + pretty) | 🚧 In progress / Planned |
 | Visitor pattern | ⬚ Planned |
 | C FFI layer | ⬚ Planned |
 | Conformance test suite | ⬚ Planned |
