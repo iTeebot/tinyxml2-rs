@@ -676,10 +676,133 @@ impl Document {
         };
         attrs.iter()
     }
+
+    // --- Visitor / Traversal APIs ---
+
+    /// Walk the DOM tree starting at the document root, driving the visitor.
+    pub fn accept(&self, visitor: &mut dyn crate::visitor::XmlVisitor) -> bool {
+        self.accept_node(self.root, visitor)
+    }
+
+    /// Walk the DOM tree starting at the specified node, driving the visitor.
+    pub fn accept_node(&self, node: NodeId, visitor: &mut dyn crate::visitor::XmlVisitor) -> bool {
+        if !self.arena.contains(node) {
+            return false;
+        }
+
+        let Some(data) = self.arena.get(node) else {
+            return false;
+        };
+
+        match &data.kind {
+            NodeKind::Document => {
+                if !visitor.visit_enter_document(self) {
+                    return false;
+                }
+                let mut current = self.first_child(node);
+                while let Some(child) = current {
+                    if !self.accept_node(child, visitor) {
+                        return false;
+                    }
+                    current = self.next_sibling(child);
+                }
+                if !visitor.visit_exit_document(self) {
+                    return false;
+                }
+            }
+            NodeKind::Element(_) => {
+                if !visitor.visit_enter_element(self, node) {
+                    return false;
+                }
+                let mut current = self.first_child(node);
+                while let Some(child) = current {
+                    if !self.accept_node(child, visitor) {
+                        return false;
+                    }
+                    current = self.next_sibling(child);
+                }
+                if !visitor.visit_exit_element(self, node) {
+                    return false;
+                }
+            }
+            NodeKind::Text(_) => {
+                if !visitor.visit_text(self, node) {
+                    return false;
+                }
+            }
+            NodeKind::Comment(_) => {
+                if !visitor.visit_comment(self, node) {
+                    return false;
+                }
+            }
+            NodeKind::Declaration(_) => {
+                if !visitor.visit_declaration(self, node) {
+                    return false;
+                }
+            }
+            NodeKind::Unknown(_) => {
+                if !visitor.visit_unknown(self, node) {
+                    return false;
+                }
+            }
+        }
+        true
+    }
+
+    // --- Serialization APIs ---
+
+    /// Pretty-prints the entire document to a String.
+    #[must_use]
+    #[allow(clippy::inherent_to_string_shadow_display)]
+    pub fn to_string(&self) -> String {
+        let mut printer = crate::printer::XmlPrinter::new();
+        self.accept(&mut printer);
+        printer.into_string()
+    }
+
+    /// Compact-prints the entire document to a String.
+    #[must_use]
+    pub fn to_string_compact(&self) -> String {
+        let mut printer = crate::printer::XmlPrinter::new_compact();
+        self.accept(&mut printer);
+        printer.into_string()
+    }
+
+    /// Saves the pretty-printed document to the given file path.
+    pub fn save_file(&self, path: impl AsRef<std::path::Path>) -> Result<()> {
+        let file = std::fs::File::create(path)?;
+        self.save_writer(file)
+    }
+
+    /// Saves the compact-printed document to the given file path.
+    pub fn save_file_compact(&self, path: impl AsRef<std::path::Path>) -> Result<()> {
+        let file = std::fs::File::create(path)?;
+        self.save_writer_compact(file)
+    }
+
+    /// Pretty-prints the document to the given `std::io::Write` sink.
+    pub fn save_writer(&self, mut writer: impl std::io::Write) -> Result<()> {
+        let s = self.to_string();
+        writer.write_all(s.as_bytes())?;
+        Ok(())
+    }
+
+    /// Compact-prints the document to the given `std::io::Write` sink.
+    pub fn save_writer_compact(&self, mut writer: impl std::io::Write) -> Result<()> {
+        let s = self.to_string_compact();
+        writer.write_all(s.as_bytes())?;
+        Ok(())
+    }
 }
 
 impl Default for Document {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl std::fmt::Display for Document {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.to_string())
     }
 }

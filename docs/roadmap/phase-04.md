@@ -1,6 +1,6 @@
 # Phase 4: Writer/Serializer
 
-> **Status:** 🔲 NOT STARTED  
+> **Status:** ✅ COMPLETED  
 > **Estimated Complexity:** MEDIUM (~1500 LOC)  
 > **Dependencies:** Phase 3 (parser — needed for round-trip testing)  
 > **Milestone:** `v0.0.4-alpha` internal
@@ -228,15 +228,15 @@ Assert: DOM₁ ≅ DOM₂         (structurally equivalent)
 
 ## Acceptance Criteria
 
-- [ ] Pretty-print output matches TinyXML2 format exactly
-- [ ] Compact output matches TinyXML2 compact format exactly
-- [ ] Round-trip parse→print→parse→print produces identical output (idempotent)
-- [ ] Streaming API produces valid, well-formed XML
-- [ ] Entity encoding is correct for all special characters
-- [ ] File I/O works for both pretty and compact modes
-- [ ] BOM output matches TinyXML2 behavior
-- [ ] `Display` trait produces same output as `to_string()`
-- [ ] All tests pass with zero warnings
+- [x] Pretty-print output matches TinyXML2 format exactly
+- [x] Compact output matches TinyXML2 compact format exactly
+- [x] Round-trip parse→print→parse→print produces identical output (idempotent)
+- [x] Streaming API produces valid, well-formed XML
+- [x] Entity encoding is correct for all special characters
+- [x] File I/O works for both pretty and compact modes
+- [x] BOM output matches TinyXML2 behavior
+- [x] `Display` trait produces same output as `to_string()`
+- [x] All tests pass with zero warnings
 
 ---
 
