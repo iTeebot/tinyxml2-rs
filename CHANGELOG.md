@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.15] - 2026-06-30
+
+### Added
+
+- **Typed Reference Wrappers**: `NodeRef<'a>` and `ElementRef<'a>` for safe, ergonomic node access with lifetime-bounded references.
+- **Null-safe Navigation Handles**: `Handle<'a>` and `HandleMut<'a>` for fluent DOM traversal chains with automatic `None` propagation.
+- **Iterator Adapters**:
+  - `Children<'a>` — iterates direct child nodes with `DoubleEndedIterator` support.
+  - `ChildElements<'a>` — iterates direct child elements with optional name filtering.
+  - `Siblings<'a>` — iterates following sibling nodes.
+  - `Attributes<'a>` — iterates element attributes as `(&str, &str)` pairs with `DoubleEndedIterator` support.
+  - `Descendants<'a>` — depth-first pre-order iteration over all descendant nodes.
+- **Convenience methods on `Document`**: `children()`, `child_elements()`, `siblings()`, `descendants()`, `attributes()`, `handle()`, `handle_mut()`, `node_ref()`, `element_ref()`.
+
 ## [0.1.14] - 2026-06-30
 
 ### Added

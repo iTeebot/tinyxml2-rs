@@ -1,9 +1,9 @@
 # Phase 5: Visitor Pattern & Ergonomic API
 
-> **Status:** 🔲 NOT STARTED  
+> **Status:** ✅ COMPLETED  
 > **Estimated Complexity:** MEDIUM (~1200 LOC)  
 > **Dependencies:** Phase 4 (writer — Printer as Visitor implementation)  
-> **Milestone:** `v0.0.5-alpha` internal
+> **Milestone:** `v0.1.15`
 
 ---
 
@@ -293,15 +293,15 @@ for child in root.child_elements() {
 
 ## Acceptance Criteria
 
-- [ ] Visitor trait correctly dispatches to all 8 callback methods
-- [ ] `Document::accept()` performs correct depth-first traversal
-- [ ] Returning `false` from any visitor method halts traversal
-- [ ] Printer-as-Visitor produces identical output to direct serialization
-- [ ] Handle null-propagation works for all navigation chains
-- [ ] All iterators yield elements in correct order
-- [ ] `DoubleEndedIterator` works for Children and Attributes
-- [ ] ElementRef typed access matches Document-level methods
-- [ ] All tests pass with zero warnings
+- [x] Visitor trait correctly dispatches to all 8 callback methods
+- [x] `Document::accept()` performs correct depth-first traversal
+- [x] Returning `false` from any visitor method halts traversal
+- [x] Printer-as-Visitor produces identical output to direct serialization
+- [x] Handle null-propagation works for all navigation chains
+- [x] All iterators yield elements in correct order
+- [x] `DoubleEndedIterator` works for Children and Attributes
+- [x] ElementRef typed access matches Document-level methods
+- [x] All tests pass with zero warnings
 
 ---
 

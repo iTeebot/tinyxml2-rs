@@ -48,9 +48,12 @@ pub mod arena;
 pub mod document;
 pub mod entity;
 pub mod error;
+pub mod handle;
+pub mod iter;
 pub mod node;
 pub(crate) mod parser;
 pub mod printer;
+pub mod refs;
 pub mod typed;
 pub mod util;
 pub mod visitor;
@@ -59,8 +62,11 @@ pub mod visitor;
 pub use arena::NodeId;
 pub use document::Document;
 pub use error::{ParseErrorKind, Result, XmlError};
+pub use handle::{Handle, HandleMut};
+pub use iter::{Attributes, ChildElements, Children, Descendants, Siblings};
 pub use node::{Attribute, ElementData, NodeData, NodeKind, TextData};
 pub use printer::XmlPrinter;
+pub use refs::{ElementRef, NodeRef};
 pub use visitor::XmlVisitor;
 
 /// Type alias for [`XmlPrinter`] to maintain compatibility with C++ naming conventions.
