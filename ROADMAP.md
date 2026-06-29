@@ -16,7 +16,7 @@ one and is designed to produce a shippable, testable increment.
 | Phase | Title                        | Complexity | Status         |
 |-------|------------------------------|------------|----------------|
 | 1     | Foundation                   | Medium     | ✅ **Completed** |
-| 2     | DOM Core                     | High       | 🔲 Planned     |
+| 2     | DOM Core                     | High       | ✅ **Completed** |
 | 3     | XML Parser                   | High       | 🔲 Planned     |
 | 4     | Writer / Serializer          | Medium     | 🔲 Planned     |
 | 5     | Visitor Pattern & Ergonomics | Medium     | 🔲 Planned     |
