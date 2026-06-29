@@ -677,6 +677,75 @@ impl Document {
         attrs.iter()
     }
 
+    // --- Iterator & Ref Convenience APIs ---
+
+    /// Returns an iterator over the direct children of `parent`.
+    pub fn children(&self, parent: NodeId) -> crate::iter::Children<'_> {
+        crate::iter::Children::new(self, parent)
+    }
+
+    /// Returns an iterator over the direct child elements of `parent`,
+    /// optionally filtered by tag name.
+    pub fn child_elements(
+        &self,
+        parent: NodeId,
+        name: Option<&str>,
+    ) -> crate::iter::ChildElements<'_> {
+        crate::iter::ChildElements::new(self, parent, name)
+    }
+
+    /// Returns an iterator over the following siblings of `node`.
+    pub fn siblings(&self, node: NodeId) -> crate::iter::Siblings<'_> {
+        crate::iter::Siblings::new(self, node)
+    }
+
+    /// Returns a depth-first pre-order iterator over all descendants of `root`.
+    pub fn descendants(&self, root: NodeId) -> crate::iter::Descendants<'_> {
+        crate::iter::Descendants::new(self, root)
+    }
+
+    /// Returns an iterator over the attributes of element `el`.
+    pub fn attributes(&self, el: NodeId) -> crate::iter::Attributes<'_> {
+        let Some(data) = self.arena.get(el) else {
+            return crate::iter::Attributes::empty();
+        };
+        match &data.kind {
+            NodeKind::Element(el_data) | NodeKind::Declaration(el_data) => {
+                crate::iter::Attributes::new(&el_data.attributes)
+            }
+            _ => crate::iter::Attributes::empty(),
+        }
+    }
+
+    /// Creates an immutable navigation [`Handle`](crate::handle::Handle) for the given node.
+    pub fn handle(&self, node: NodeId) -> crate::handle::Handle<'_> {
+        crate::handle::Handle::new(self, node)
+    }
+
+    /// Creates a mutable navigation [`HandleMut`](crate::handle::HandleMut) for the given node.
+    pub fn handle_mut(&mut self, node: NodeId) -> crate::handle::HandleMut<'_> {
+        crate::handle::HandleMut::new(self, node)
+    }
+
+    /// Returns a [`NodeRef`](crate::refs::NodeRef) for the given node, if it exists.
+    pub fn node_ref(&self, id: NodeId) -> Option<crate::refs::NodeRef<'_>> {
+        if self.arena.contains(id) {
+            Some(crate::refs::NodeRef::new(self, id))
+        } else {
+            None
+        }
+    }
+
+    /// Returns an [`ElementRef`](crate::refs::ElementRef) for the given node,
+    /// if it exists and is an Element.
+    pub fn element_ref(&self, id: NodeId) -> Option<crate::refs::ElementRef<'_>> {
+        let data = self.arena.get(id)?;
+        match &data.kind {
+            NodeKind::Element(_) => Some(crate::refs::ElementRef::new(self, id)),
+            _ => None,
+        }
+    }
+
     // --- Visitor / Traversal APIs ---
 
     /// Walk the DOM tree starting at the document root, driving the visitor.

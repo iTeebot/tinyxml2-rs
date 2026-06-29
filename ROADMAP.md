@@ -194,29 +194,17 @@ parse_document()
 
 ### Key Deliverables
 
-- [ ] **`XmlVisitor` trait** — Mirrors TinyXML2's `XMLVisitor` with `visit_enter` / `visit_exit`
+- [x] **`XmlVisitor` trait** — Mirrors TinyXML2's `XMLVisitor` with `visit_enter` / `visit_exit`
   methods for each node type. Returns `bool` to control traversal continuation.
-  ```rust
-  pub trait XmlVisitor {
-      fn visit_enter_document(&mut self, doc: &Document) -> bool { true }
-      fn visit_exit_document(&mut self, doc: &Document) -> bool { true }
-      fn visit_enter_element(&mut self, element: ElementRef<'_>, attrs: &[Attribute]) -> bool { true }
-      fn visit_exit_element(&mut self, element: ElementRef<'_>) -> bool { true }
-      fn visit_text(&mut self, text: &str) -> bool { true }
-      fn visit_comment(&mut self, comment: &str) -> bool { true }
-      fn visit_declaration(&mut self, decl: &str) -> bool { true }
-      fn visit_unknown(&mut self, unknown: &str) -> bool { true }
-  }
-  ```
-- [ ] **`Document::accept(visitor)`** — Depth-first traversal that drives the visitor.
-- [ ] **Handle types** — `NodeHandle`, `ElementHandle`, `TextHandle` — typed wrappers around
-  `NodeId` that provide safe, ergonomic access without exposing raw arena indices.
-- [ ] **`ElementRef<'a>` / `ElementMut<'a>`** — Borrowed references into the arena with
-  lifetime-bounded access. Prevents iterator invalidation.
-- [ ] **Iterators** — `children()`, `child_elements()`, `attributes()`, `siblings()` returning
-  standard Rust iterators (`impl Iterator<Item = ...>`).
-- [ ] **Convenience methods** — `element.text()` (get text content), `element.set_text()`,
-  `element.query_int_attribute()`, `element.get_or_create_child()`.
+- [x] **`Document::accept(visitor)`** — Depth-first traversal that drives the visitor.
+- [x] **Handle types** — `Handle<'a>`, `HandleMut<'a>` — null-safe navigation wrappers around
+  `NodeId` for fluent DOM traversal chains with automatic `None` propagation.
+- [x] **`NodeRef<'a>` / `ElementRef<'a>`** — Typed, lifetime-bounded reference wrappers for
+  safe, ergonomic access. Prevents iterator invalidation.
+- [x] **Iterators** — `Children`, `ChildElements`, `Siblings`, `Attributes`, `Descendants` —
+  standard Rust iterators with `DoubleEndedIterator` and `FusedIterator` support.
+- [x] **Convenience methods** — `Document::children()`, `child_elements()`, `siblings()`,
+  `descendants()`, `attributes()`, `handle()`, `handle_mut()`, `node_ref()`, `element_ref()`.
 
 ### Estimated Test Count: 80–100 unit tests
 
