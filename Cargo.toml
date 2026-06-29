@@ -1,0 +1,30 @@
+[workspace]
+resolver = "2"
+
+members = [
+    "crates/tinyxml2",
+    "crates/tinyxml2-capi",
+    "crates/tinyxml2-bench",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85.0"
+license = "MIT"
+repository = "https://github.com/Teebot/tinyxml2-rs"
+homepage = "https://github.com/Teebot/tinyxml2-rs"
+authors = ["Teebot"]
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+# Allow common pedantic exceptions
+module_name_repetitions = "allow"
+must_use_candidate = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+doc_markdown = "allow"  # We reference TinyXML2 C++ names (XMLDocument, etc.) extensively

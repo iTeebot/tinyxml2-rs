@@ -1,0 +1,7 @@
+[build]
+# Emit full backtraces on error for development
+rustflags = []
+
+[target.x86_64-unknown-linux-gnu]
+# Uncomment for faster linking on Linux:
+# rustflags = ["-C", "link-arg=-fuse-ld=lld"]

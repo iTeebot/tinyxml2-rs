@@ -1,0 +1,30 @@
+# Build artifacts
+/target/
+
+# IDE / Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Profiling / Coverage
+*.profdata
+*.profraw
+lcov.info
+tarpaulin-report.html
+coverage/
+
+# Fuzz corpus artifacts (keep seeds, ignore auto-generated)
+fuzz/artifacts/
+
+# Benchmark results (tracked manually via assets/)
+criterion/
+
+# OS-specific
+.DS_Store
+.Spotlight-V100
+.Trashes
+desktop.ini

@@ -1,0 +1,59 @@
+name: Feature Request
+description: Suggest a new feature or enhancement for tinyxml2-rs
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a feature! Please fill out the form below
+        so we can understand your request and evaluate it.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of the feature you'd like.
+      placeholder: Describe the feature...
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use Case
+      description: >
+        Describe the problem you're trying to solve or the workflow this
+        feature would enable. Why is this feature important to you?
+      placeholder: |
+        I'm trying to...
+        Currently I have to work around this by...
+    validations:
+      required: true
+
+  - type: textarea
+    id: tinyxml2-equivalent
+    attributes:
+      label: TinyXML2 C++ Equivalent
+      description: >
+        If this feature exists in the upstream TinyXML2 C++ library, please
+        describe the equivalent API or behavior. Include C++ code snippets
+        if helpful.
+      render: cpp
+      placeholder: |
+        // Example C++ usage of the equivalent TinyXML2 feature:
+        XMLDocument doc;
+        doc.LoadFile("example.xml");
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: >
+        Add any other context, API design ideas, mockups, or references here.
+        Links to relevant TinyXML2 documentation or issues are also helpful.
+      placeholder: Any additional context...
+    validations:
+      required: false

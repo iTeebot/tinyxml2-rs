@@ -1,0 +1,32 @@
+[package]
+name = "tinyxml2-capi"
+description = "C FFI compatibility layer for tinyxml2-rs"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+keywords = ["xml", "ffi", "c-api", "tinyxml2"]
+categories = ["external-ffi-bindings"]
+
+[lib]
+# Produce both static and shared C libraries
+crate-type = ["cdylib", "staticlib"]
+
+[dependencies]
+tinyxml2 = { path = "../tinyxml2" }
+
+# Override workspace lint — unsafe is required for FFI
+[lints.rust]
+unsafe_code = "allow"
+
+[lints.clippy]
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+module_name_repetitions = "allow"
+must_use_candidate = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+missing_safety_doc = "allow"

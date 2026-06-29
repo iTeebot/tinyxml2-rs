@@ -1,0 +1,20 @@
+[package]
+name = "tinyxml2"
+description = "A ground-up Rust implementation of the TinyXML2 API — behavioral compatibility, idiomatic internals"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+keywords = ["xml", "parser", "dom", "tinyxml2", "serialization"]
+categories = ["parser-implementations", "encoding", "data-structures"]
+readme = "../../README.md"
+
+[dependencies]
+
+[dev-dependencies]
+
+[lints]
+workspace = true
