@@ -46,6 +46,7 @@ impl Document {
     }
 
     /// Sets the error state of the document.
+    #[allow(dead_code)]
     pub(crate) fn set_error(&mut self, err: XmlError) {
         self.error = Some(err);
     }
