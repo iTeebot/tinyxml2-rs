@@ -1,6 +1,6 @@
 # Phase 2: DOM Core
 
-> **Status:** 🔲 NOT STARTED  
+> **Status:** ✅ COMPLETED  
 > **Estimated Complexity:** HIGH (~3000 LOC)  
 > **Dependencies:** Phase 1 (arena, error, entity)  
 > **Milestone:** `v0.0.2-alpha` internal
@@ -223,14 +223,14 @@ than a separate `CData` variant and matches TinyXML2's design.
 
 ## Acceptance Criteria
 
-- [ ] All 6 factory methods create correct node types
-- [ ] Tree invariants hold after any sequence of insert/delete operations
-- [ ] Navigation methods return correct nodes for all tree topologies
-- [ ] Typed attribute conversions match TinyXML2 for all edge cases
-- [ ] `deep_clone` produces independent subtrees (mutations don't cross)
-- [ ] Generation checks reject stale `NodeId` after `delete_node`
-- [ ] `clear()` resets document to initial state
-- [ ] All tests pass with zero warnings
+- [x] All 6 factory methods create correct node types
+- [x] Tree invariants hold after any sequence of insert/delete operations
+- [x] Navigation methods return correct nodes for all tree topologies
+- [x] Typed attribute conversions match TinyXML2 for all edge cases
+- [x] `deep_clone` produces independent subtrees (mutations don't cross)
+- [x] Generation checks reject stale `NodeId` after `delete_node`
+- [x] `clear()` resets document to initial state
+- [x] All tests pass with zero warnings
 
 ---
 

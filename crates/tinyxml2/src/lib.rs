@@ -45,13 +45,18 @@
 #![warn(rustdoc::missing_crate_level_docs)]
 
 pub mod arena;
+pub mod document;
 pub mod entity;
 pub mod error;
+pub mod node;
+pub mod typed;
 pub mod util;
 
 // Re-export primary types at crate root for convenience
 pub use arena::NodeId;
+pub use document::Document;
 pub use error::{ParseErrorKind, Result, XmlError};
+pub use node::{Attribute, ElementData, NodeData, NodeKind, TextData};
 
 /// Whitespace handling mode, matching TinyXML2's `Whitespace` enum.
 ///
