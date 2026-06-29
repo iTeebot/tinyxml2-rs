@@ -18,7 +18,7 @@ one and is designed to produce a shippable, testable increment.
 | 1     | Foundation                   | Medium     | ✅ **Completed** |
 | 2     | DOM Core                     | High       | ✅ **Completed** |
 | 3     | XML Parser                   | High       | ✅ **Completed** |
-| 4     | Writer / Serializer          | Medium     | 🔲 Planned     |
+| 4     | Writer / Serializer          | Medium     | ✅ **Completed** |
 | 5     | Visitor Pattern & Ergonomics | Medium     | 🔲 Planned     |
 | 6     | C API (`tinyxml2-capi`)      | Medium     | 🔲 Planned     |
 | 7     | Testing & Benchmarks         | Medium     | 🔲 Planned     |
@@ -163,22 +163,22 @@ parse_document()
 
 ### Key Deliverables
 
-- [ ] **`XmlPrinter` struct** — Stateful writer that traverses the DOM and emits well-formed XML.
+- [x] **`XmlPrinter` struct** — Stateful writer that traverses the DOM and emits well-formed XML.
   Implements the `XmlVisitor` trait (Phase 5) internally for traversal.
-- [ ] **Pretty-print mode** — Indented output with configurable indent string (default: 4 spaces).
+- [x] **Pretty-print mode** — Indented output with configurable indent string (default: 4 spaces).
   Newlines between elements. Mirrors `XMLPrinter(FILE*, true)`.
-- [ ] **Compact mode** — Minimal whitespace output for network/storage efficiency. Mirrors
+- [x] **Compact mode** — Minimal whitespace output for network/storage efficiency. Mirrors
   `XMLPrinter(FILE*, false)`.
-- [ ] **Write targets** —
+- [x] **Write targets** —
   - `to_string() -> String` — In-memory serialization.
   - `to_writer(impl Write)` — Streaming output to any `std::io::Write` sink.
   - `to_file(path)` — Convenience wrapper for file output.
-- [ ] **Streaming API** — Push-based API for building XML without a DOM tree:
+- [x] **Streaming API** — Push-based API for building XML without a DOM tree:
   `open_element("tag")`, `push_attribute("key", "value")`, `push_text("content")`,
   `close_element()`. Useful for high-performance serialization.
-- [ ] **Entity escaping** — Automatic escaping of `<`, `>`, `&`, `"`, `'` in text content and
+- [x] **Entity escaping** — Automatic escaping of `<`, `>`, `&`, `"`, `'` in text content and
   attribute values during output.
-- [ ] **Declaration output** — Optional XML declaration (`<?xml version="1.0" encoding="UTF-8"?>`)
+- [x] **Declaration output** — Optional XML declaration (`<?xml version="1.0" encoding="UTF-8"?>`)
   controlled by configuration.
 
 ### Estimated Test Count: 80–100 unit tests

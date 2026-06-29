@@ -50,14 +50,21 @@ pub mod entity;
 pub mod error;
 pub mod node;
 pub(crate) mod parser;
+pub mod printer;
 pub mod typed;
 pub mod util;
+pub mod visitor;
 
 // Re-export primary types at crate root for convenience
 pub use arena::NodeId;
 pub use document::Document;
 pub use error::{ParseErrorKind, Result, XmlError};
 pub use node::{Attribute, ElementData, NodeData, NodeKind, TextData};
+pub use printer::XmlPrinter;
+pub use visitor::XmlVisitor;
+
+/// Type alias for [`XmlPrinter`] to maintain compatibility with C++ naming conventions.
+pub type Printer = XmlPrinter;
 
 /// Whitespace handling mode, matching TinyXML2's `Whitespace` enum.
 ///

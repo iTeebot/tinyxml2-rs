@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.14] - 2026-06-30
+
+### Added
+
+- `XmlVisitor` trait defining standard DOM traversal callbacks (`visit_enter_document`, `visit_exit_document`, `visit_enter_element`, `visit_exit_element`, `visit_text`, `visit_comment`, `visit_declaration`, `visit_unknown`)
+- `XmlPrinter` struct supporting pretty-printed (indented, newline-formatted) and compact XML serialization
+- Stateful streaming (push) API on `XmlPrinter` (`open_element`, `push_attribute`, `close_element`, `push_text`, `push_text_raw`, `push_cdata`, `push_comment`, `push_declaration`, `push_unknown`, `push_header`)
+- DOM-driven serialization methods on `Document` (`to_string`, `to_string_compact`, `save_file`, `save_file_compact`, `save_writer`, `save_writer_compact`)
+- `std::fmt::Display` implementation for `Document`
+- Comprehensive unit and round-trip integration test suites verifying printer correctness and parse-print-parse equivalence
+- Automated release publication GitHub Actions workflow (`publish.yml`) to publish crates to crates.io on tag push
+
+## [0.1.13] - 2026-06-29
+
 ### Added
 
 - Project scaffolding with 3-crate workspace structure

@@ -90,19 +90,19 @@ fn main() {
     let mut doc = Document::new();
 
     let root = doc.new_element("config");
-    doc.insert_end_child(root);
+    doc.insert_end_child(doc.root(), root).unwrap();
 
     let setting = doc.new_element("setting");
-    setting.set_attribute("name", "volume");
-    setting.set_attribute("value", "75");
-    root.insert_end_child(setting);
+    doc.set_attribute(setting, "name", "volume").unwrap();
+    doc.set_attribute(setting, "value", "75").unwrap();
+    doc.insert_end_child(root, setting).unwrap();
 
     // Print compact XML
     let output = doc.to_string_compact();
     println!("{output}");
 
     // Print formatted XML
-    let output = doc.to_string_pretty();
+    let output = doc.to_string();
     println!("{output}");
 }
 ```
@@ -179,11 +179,9 @@ Benchmarks are tracked in `crates/tinyxml2-bench/` using [Criterion](https://git
 
 ---
 
-## Project Status
+> **Phase 5 — Visitor Pattern & Ergonomics** (planned)
 
-> **Phase 4 — Writer / Serializer** (planned)
-
-tinyxml2-rs is under active development. The core DOM representation and recursive-descent parser are fully implemented. See [ROADMAP.md](ROADMAP.md) for the full development plan.
+tinyxml2-rs is under active development. The core DOM, parser, writer, and visitor infrastructure are fully implemented. See [ROADMAP.md](ROADMAP.md) for the full development plan.
 
 | Milestone | Status |
 |-----------|--------|
@@ -191,8 +189,8 @@ tinyxml2-rs is under active development. The core DOM representation and recursi
 | Error types & entity handling | ✅ Complete |
 | Arena-based DOM | ✅ Complete |
 | Recursive descent parser | ✅ Complete |
-| XML writer (compact + pretty) | 🚧 In progress / Planned |
-| Visitor pattern | ⬚ Planned |
+| XML writer (compact + pretty) | ✅ Complete |
+| Visitor pattern | ✅ Complete |
 | C FFI layer | ⬚ Planned |
 | Conformance test suite | ⬚ Planned |
 | `0.1.0` release | ⬚ Planned |
