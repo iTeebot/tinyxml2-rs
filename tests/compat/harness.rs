@@ -118,8 +118,11 @@ fn run_differential_test(xml_path: &Path, whitespace: Whitespace, max_depth: Opt
 
     let content = fs::read_to_string(xml_path)
         .unwrap_or_else(|_| panic!("Failed to read XML file {xml_path:?}"));
+    // Normalize CRLF to LF to match C++ TinyXML2's internal newline normalization
+    // and prevent Windows checkout platform-specific divergences.
+    let normalized_content = content.replace("\r\n", "\n").replace('\r', "\n");
 
-    let rust_res = doc.parse_str(&content);
+    let rust_res = doc.parse_str(&normalized_content);
 
     // Call C++ reference runner
     let cpp_json_str = cpp_runner::run_cpp_reference(xml_path, ws_str);
