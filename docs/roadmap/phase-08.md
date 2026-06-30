@@ -1,9 +1,9 @@
 # Phase 8: Documentation, Examples & Release
 
-> **Status:** 🔲 NOT STARTED  
+> **Status:** ✅ COMPLETED (2026-07-01)  
 > **Estimated Complexity:** MEDIUM (~1000 LOC)  
 > **Dependencies:** Phase 7 (all functionality tested and benchmarked)  
-> **Milestone:** `v0.1.0` — first public release
+> **Milestone:** `v1.0.0` — stable release
 
 ---
 

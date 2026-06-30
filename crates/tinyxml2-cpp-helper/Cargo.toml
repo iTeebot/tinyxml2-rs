@@ -1,6 +1,6 @@
 [package]
 name = "tinyxml2-cpp-helper"
-version = "0.1.17"
+version.workspace = true
 edition = "2024"
 publish = false
 

@@ -8,8 +8,9 @@ license.workspace = true
 repository.workspace = true
 homepage.workspace = true
 authors.workspace = true
-keywords = ["xml", "ffi", "c-api", "tinyxml2"]
-categories = ["external-ffi-bindings"]
+keywords = ["xml", "tinyxml2", "parser", "dom", "ffi"]
+categories = ["parser-implementations", "external-ffi-bindings"]
+documentation = "https://docs.rs/tinyxml2-capi"
 readme = "../../README.md"
 
 [lib]
@@ -17,7 +18,7 @@ readme = "../../README.md"
 crate-type = ["cdylib", "staticlib", "lib"]
 
 [dependencies]
-tinyxml2 = { path = "../tinyxml2", version = "0.1.17" }
+tinyxml2 = { path = "../tinyxml2", version = "1.0.0" }
 
 [build-dependencies]
 cbindgen = "0.28"
@@ -34,4 +35,8 @@ must_use_candidate = "allow"
 missing_errors_doc = "allow"
 missing_panics_doc = "allow"
 missing_safety_doc = "allow"
+
+[[example]]
+name = "c_interop"
+path = "../../examples/c_interop.rs"
 

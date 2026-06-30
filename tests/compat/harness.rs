@@ -185,23 +185,28 @@ fn run_differential_test(xml_path: &Path, whitespace: Whitespace, max_depth: Opt
     }
 }
 
-fn find_workspace_root() -> PathBuf {
-    let mut dir = std::env::current_dir().unwrap();
+fn find_workspace_root() -> Option<PathBuf> {
+    let mut dir = std::env::current_dir().ok()?;
     loop {
         if dir.join("tests").join("corpus").exists() {
-            return dir;
+            return Some(dir);
         }
         if let Some(parent) = dir.parent() {
             dir = parent.to_path_buf();
         } else {
-            panic!("Could not find workspace root containing tests/corpus");
+            return None;
         }
     }
 }
 
 #[test]
 fn test_valid_corpus_differential() {
-    let root = find_workspace_root();
+    let Some(root) = find_workspace_root() else {
+        println!(
+            "Skipping test_valid_corpus_differential: tests/corpus not found (e.g. cargo publish)"
+        );
+        return;
+    };
     let files = get_all_xml_files(&root.join("tests/corpus/valid"));
     assert!(!files.is_empty(), "No files found in tests/corpus/valid");
     for file in &files {
@@ -213,7 +218,12 @@ fn test_valid_corpus_differential() {
 
 #[test]
 fn test_invalid_corpus_differential() {
-    let root = find_workspace_root();
+    let Some(root) = find_workspace_root() else {
+        println!(
+            "Skipping test_invalid_corpus_differential: tests/corpus not found (e.g. cargo publish)"
+        );
+        return;
+    };
     let files = get_all_xml_files(&root.join("tests/corpus/invalid"));
     assert!(!files.is_empty(), "No files found in tests/corpus/invalid");
     for file in &files {
@@ -224,7 +234,12 @@ fn test_invalid_corpus_differential() {
 
 #[test]
 fn test_unicode_corpus_differential() {
-    let root = find_workspace_root();
+    let Some(root) = find_workspace_root() else {
+        println!(
+            "Skipping test_unicode_corpus_differential: tests/corpus not found (e.g. cargo publish)"
+        );
+        return;
+    };
     let files = get_all_xml_files(&root.join("tests/corpus/unicode"));
     assert!(!files.is_empty(), "No files found in tests/corpus/unicode");
     for file in &files {

@@ -21,8 +21,11 @@ one and is designed to produce a shippable, testable increment.
 | 4     | Writer / Serializer          | Medium     | ✅ **Completed** |
 | 5     | Visitor Pattern & Ergonomics | Medium     | ✅ **Completed** |
 | 6     | C API (`tinyxml2-capi`)      | Medium     | ✅ **Completed** |
-| 7     | Testing & Benchmarks         | Medium     | 🔲 Planned     |
-| 8     | Documentation & Release      | Low        | 🔲 Planned     |
+| 7     | Testing & Benchmarks         | Medium     | ✅ **Completed** |
+| 8     | Documentation & Release      | Low        | ✅ **Completed** |
+| 9     | WASM & `no_std` Support      | Medium     | 🔲 Planned     |
+| 10    | XPath & Serde Integration    | High       | 🔲 Planned     |
+| 11    | Advanced Perf & SIMD         | High       | 🔲 Planned     |
 
 ---
 
@@ -277,7 +280,7 @@ parse_document()
 
 ---
 
-## Phase 8: Documentation & Release
+## Phase 8: Documentation & Release ✅ **COMPLETED**
 
 > Polish documentation, write migration guides, and publish the initial release.
 
@@ -285,76 +288,58 @@ parse_document()
 
 ### Key Deliverables
 
-- [ ] **Migration guide** — `MIGRATION.md` mapping every TinyXML2 C++ class and method to its
+- [x] **Migration guide** — `MIGRATION.md` mapping every TinyXML2 C++ class and method to its
   Rust equivalent. Organized by class (`XMLDocument` → `Document`, `XMLElement` → `Element`, etc.)
   with code examples for each.
-- [ ] **Example programs** — `examples/` directory with:
+- [x] **Example programs** — `examples/` directory with:
   - `parse_file.rs` — Parse an XML file and print element names.
   - `build_dom.rs` — Programmatically construct a DOM and serialize.
   - `visitor.rs` — Implement a custom visitor to extract data.
   - `streaming_writer.rs` — Use the push-based API for large output.
   - `c_interop.rs` — Demonstrate calling the C API from Rust.
-- [ ] **API documentation** — 100% documentation coverage on public items. Rich examples in doc
+- [x] **API documentation** — 100% documentation coverage on public items. Rich examples in doc
   comments. Cross-linked with `#[doc]` attributes.
-- [ ] **`README.md` overhaul** — Feature matrix, quick start, performance comparison table,
+- [x] **`README.md` overhaul** — Feature matrix, quick start, performance comparison table,
   MSRV policy, and contribution guidelines.
-- [ ] **`CHANGELOG.md`** — Initial changelog following [Keep a Changelog](https://keepachangelog.com/) format.
-- [ ] **Crate metadata** — `Cargo.toml` keywords, categories, repository link, license (MIT/Apache-2.0
+- [x] **`CHANGELOG.md`** — Initial changelog following [Keep a Changelog](https://keepachangelog.com/) format.
+- [x] **Crate metadata** — `Cargo.toml` keywords, categories, repository link, license (MIT/Apache-2.0
   dual license), and `rust-version` field.
-- [ ] **0.1.0 release** — Publish `tinyxml2` and `tinyxml2-capi` to [crates.io](https://crates.io).
-  Tag `v0.1.0` in git.
+- [x] **1.0.0 release** — Publish `tinyxml2` and `tinyxml2-capi` to [crates.io](https://crates.io).
+  Tag `v1.0.0` in git.
 
 ---
 
-## Future Work
+## Phase 9: WASM & `no_std` Support (Target: Version 1.1.0) 🔲 **PLANNED**
 
-> Items beyond the 0.1.0 release, tracked for future planning.
+Enable tinyxml2-rs to run in resource-constrained embedded environments and web browsers.
 
-### SIMD-Accelerated Parsing
+### Key Deliverables
+- [ ] **no_std compatibility** — Feature-gate standard library dependencies and use the `alloc` crate for all dynamic memory allocations (`Vec`, `String`, `Box`). Target: `#![no_std]` with `extern crate alloc`.
+- [ ] **WASM bindings** — Add `wasm-bindgen` support and create JavaScript/TypeScript bindings to allow parsing/serializing XML directly in the browser and Node.js.
+- [ ] **Abstract I/O** — Replace file/stream writers with core-friendly abstractions that do not depend on `std::io::Write`.
 
-Leverage SIMD instructions (`SSE2`/`AVX2`/`NEON`) for hot-path operations:
-- Fast scanning for `<`, `>`, `&`, `"` delimiters using `_mm256_cmpeq_epi8`.
-- Bulk whitespace detection and skipping.
-- Expected 2–4× speedup on large documents.
-- Use the [`memchr`](https://crates.io/crates/memchr) crate for portable SIMD-accelerated byte search as a starting point.
+---
 
-### Parallel DOM Utilities
+## Phase 10: XPath & Serde Integration (Target: Version 1.2.0) 🔲 **PLANNED**
 
-- **Parallel visitor** — Rayon-based parallel traversal for read-only visitors on large DOMs.
-- **Parallel parsing** — Experimental chunked parsing for multi-gigabyte XML files (requires
-  speculative parsing with rollback).
-- **Thread-safe Document** — `Arc<RwLock<Arena>>` variant for concurrent read access.
+Improve the ergonomics of data extraction and structured serialization.
 
-### XML Namespace Support
+### Key Deliverables
+- [ ] **XPath Subset** — Implement a lightweight, fast, and spec-compliant subset of XPath 1.0 (e.g., path selection, tag filtering) to query DOM nodes dynamically. Expose these querying interfaces to C/C++ via FFI functions in `tinyxml2-capi`.
+- [ ] **Serde Serialization** — Introduce a separate `tinyxml2-serde` crate allowing automatic Rust struct serialization/deserialization into XML structures.
+- [ ] **Attributes vs. Elements Annotations** — Custom serde macros (e.g., `#[xml(attribute)]`, `#[xml(element)]`) for direct structure control.
 
-- Namespace-aware parsing: `xmlns` attribute handling, prefix resolution.
-- Namespace-qualified element and attribute lookup: `element.find_attribute_ns("uri", "local")`.
-- Namespace context propagation through the DOM tree.
-- *Note:* TinyXML2 intentionally omits namespace support; this would be a Rust-only extension.
+---
 
-### Serde Integration
+## Phase 11: Advanced Perf & SIMD (Target: Version 2.0.0) 🔲 **PLANNED**
 
-- `tinyxml2-serde` crate providing `Serialize`/`Deserialize` implementations.
-- Derive macros for automatic XML ↔ struct mapping.
-- Attribute vs. element field annotations (`#[xml(attribute)]`, `#[xml(child)]`).
-- Compatibility with existing serde XML crates' conventions where possible.
+Unlock high-performance processing for large-scale XML workloads.
 
-### `no_std` Support
-
-- Feature-gated `no_std` mode for embedded/WASM targets.
-- Replace `std::io::Write` with a trait abstraction.
-- Replace `String`/`Vec` with `alloc` crate equivalents.
-- Remove file I/O APIs under `no_std`; retain in-memory parsing and serialization.
-- Target: `#![no_std]` with `extern crate alloc`.
-
-### Additional Future Items
-
-- **XPath subset** — Basic XPath 1.0 expression evaluation for element queries.
-- **Schema validation** — Optional DTD/XSD validation layer.
-- **String interning** — Deduplicate tag names and attribute names in the arena for reduced memory
-  usage on large documents with repetitive structure.
-- **Memory-mapped parsing** — `mmap`-based input for zero-copy parsing of large files.
-- **WASM bindings** — `wasm-bindgen` wrapper for browser/Node.js usage.
+### Key Deliverables
+- [ ] **SIMD Character Scanning** — Use SIMD vector instructions (SSE2/AVX2/NEON) via `memchr` or custom intrinsics to accelerate whitespace scanning and token delimiter matching.
+- [ ] **String Interning** — Intern tag and attribute names in the Document arena to reduce memory usage and improve lookup speed.
+- [ ] **Parallel Traversal** — Add Rayon-based parallel visitor traversal for multi-threaded read-only traversals of very large documents.
+- [ ] **XML Namespace Support** — Namespace-qualified element/attribute lookup and context propagation. Expose these features via the FFI layer (`tinyxml2-capi`) to give C and C++ users native namespace capabilities that the original C++ TinyXML2 lacks.
 
 ---
 
@@ -370,4 +355,4 @@ labeled `phase-N`. Each phase has a tracking issue with a checklist of deliverab
 
 ---
 
-*Last updated: 2026-06-30*
+*Last updated: 2026-07-01*

@@ -19,6 +19,7 @@
 // Line numbers are always small positive u32 values; the cast to c_int (i32)
 // will not wrap in any realistic scenario.
 #![allow(clippy::cast_possible_wrap)]
+#![warn(missing_docs)]
 
 mod types;
 

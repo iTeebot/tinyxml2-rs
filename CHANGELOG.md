@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2026-07-01
+
+### Added
+- **Stable 1.0.0 Release**: Promoted `tinyxml2-rs` to a stable, production-ready release representing a complete, fully-verified TinyXML2 compatible API.
+- **100% Documentation Coverage**: Enforced `#![warn(missing_docs)]` across both core `tinyxml2` and FFI `tinyxml2-capi` crates, achieving 100% Rustdoc coverage with rich usage examples.
+- **Migration Guide**: Created a comprehensive C++ to Rust `MIGRATION.md` detailing namespace, type, and method equivalents, side-by-side snippets, iteration transformations, memory ownership, and C FFI integrations.
+- **New Code Examples**: Added 5 compilation-verified, standalone example programs:
+  - `parse_file.rs`: File parsing, attribute querying, error handling, and pretty-printing.
+  - `build_dom.rs`: Programmatic DOM construction (elements, attributes, comments, CDATA, declarations).
+  - `visitor.rs`: Custom DOM traversal statistics collector implementing `XmlVisitor`.
+  - `streaming_writer.rs`: Push-based XML creation using `XmlPrinter` directly.
+  - `c_interop.rs`: Rust client example demonstrating usage of FFI functions exported by `tinyxml2-capi`.
+- **Metadata Configuration**: Fully polished keywords, categories, repository links, license, and rust-version declarations across all crates.
+- **Automated CI Integration**: Enhanced test runner stability under CI to dynamically compile helper C++ dependencies during integration testing.
+
 ## [0.1.17] - 2026-07-01
 
 ### Added
