@@ -55,8 +55,10 @@ pub fn decode(input: &str) -> String {
                 continue;
             }
         }
-        output.push(chars[i] as char);
-        i += 1;
+        let remaining = &input[i..];
+        let ch = remaining.chars().next().unwrap();
+        output.push(ch);
+        i += ch.len_utf8();
     }
 
     output
@@ -106,8 +108,10 @@ pub fn decode_numeric_only(input: &str) -> String {
                 continue;
             }
         }
-        output.push(chars[i] as char);
-        i += 1;
+        let remaining = &input[i..];
+        let ch = remaining.chars().next().unwrap();
+        output.push(ch);
+        i += ch.len_utf8();
     }
 
     output

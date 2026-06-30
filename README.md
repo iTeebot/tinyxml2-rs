@@ -179,9 +179,9 @@ Benchmarks are tracked in `crates/tinyxml2-bench/` using [Criterion](https://git
 
 ---
 
-> **Phase 6 — C FFI Compatibility Layer** ✅ Complete
+> **Phase 7 — Testing, Fuzzing & Benchmarks** ✅ Complete
 
-tinyxml2-rs is under active development. The core DOM, parser, writer, visitor, and C FFI infrastructure are fully implemented. See [ROADMAP.md](ROADMAP.md) for the full development plan.
+tinyxml2-rs is under active development. The core DOM, parser, writer, visitor, C FFI, and testing infrastructure are fully implemented. See [ROADMAP.md](ROADMAP.md) for the full development plan.
 
 | Milestone | Status |
 |-----------|--------|
@@ -192,7 +192,7 @@ tinyxml2-rs is under active development. The core DOM, parser, writer, visitor, 
 | XML writer (compact + pretty) | ✅ Complete |
 | Visitor pattern | ✅ Complete |
 | C FFI layer | ✅ Complete |
-| Conformance test suite | ⬚ Planned |
+| Conformance test suite | ✅ Complete |
 | `0.1.0` release | ⬚ Planned |
 
 ---

@@ -240,7 +240,7 @@ parse_document()
 
 ---
 
-## Phase 7: Testing & Benchmarks (`tinyxml2-bench` crate)
+## Phase 7: Testing & Benchmarks (`tinyxml2-bench` crate) ✅ **COMPLETED**
 
 > Comprehensive compatibility testing against TinyXML2 C++ and performance benchmarking.
 
@@ -248,15 +248,15 @@ parse_document()
 
 ### Key Deliverables
 
-- [ ] **Compatibility test suite** — Port TinyXML2's own test cases (`xmltest.cpp`) to Rust.
+- [x] **Compatibility test suite** — Port TinyXML2's own test cases (`xmltest.cpp`) to Rust.
   Verify identical parse results, error behavior, and output formatting for ~300 test vectors.
-- [ ] **Round-trip tests** — Parse → serialize → re-parse cycle for a corpus of real-world XML
+- [x] **Round-trip tests** — Parse → serialize → re-parse cycle for a corpus of real-world XML
   files. Assert structural equality.
-- [ ] **Fuzz testing** — `cargo-fuzz` harnesses for:
+- [x] **Fuzz testing** — `cargo-fuzz` harnesses for:
   - `fuzz_parse` — Random byte sequences → parser (must not panic/crash).
   - `fuzz_roundtrip` — Valid XML → parse → serialize → parse → assert equality.
   - `fuzz_capi` — Random FFI call sequences → C API (must not segfault).
-- [ ] **Criterion benchmarks** — Comparative benchmarks against the original TinyXML2 C++ library
+- [x] **Criterion benchmarks** — Comparative benchmarks against the original TinyXML2 C++ library
   (linked via `cc` crate):
   | Benchmark                  | Measures                                |
   |----------------------------|-----------------------------------------|
@@ -268,9 +268,9 @@ parse_document()
   | `dom_traversal`            | Walk all nodes depth-first              |
   | `attribute_lookup`         | Query attributes by name (100K lookups) |
   | `arena_alloc_dealloc`      | Allocate/deallocate 100K nodes          |
-- [ ] **Performance targets** — Within 1.5× of TinyXML2 C++ for parsing, within 1.0× for
+- [x] **Performance targets** — Within 1.5× of TinyXML2 C++ for parsing, within 1.0× for
   serialization (Rust I/O should match or beat C++ `fprintf`).
-- [ ] **CI integration** — Benchmark results tracked via `criterion`'s JSON output. Regression
+- [x] **CI integration** — Benchmark results tracked via `criterion`'s JSON output. Regression
   alerts on >10% slowdown.
 
 ### Estimated Test Count: 300+ compatibility tests, 3 fuzz targets, 8 benchmark groups

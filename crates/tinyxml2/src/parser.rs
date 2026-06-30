@@ -324,7 +324,7 @@ impl<'a> Parser<'a> {
                     doc.insert_end_child(el_id, child)?;
                 }
             } else {
-                let child = self.parse_text(doc)?;
+                let child = self.parse_text(doc, el_id)?;
                 if let Some(child_id) = child {
                     doc.insert_end_child(el_id, child_id)?;
                 }
@@ -340,7 +340,7 @@ impl<'a> Parser<'a> {
 
     /// Parses text content between element tags.
     #[allow(clippy::unnecessary_wraps)]
-    fn parse_text(&mut self, doc: &mut Document) -> Result<Option<NodeId>> {
+    fn parse_text(&mut self, doc: &mut Document, parent: NodeId) -> Result<Option<NodeId>> {
         let start_line = self.line;
         let start_pos = self.pos;
 
@@ -358,8 +358,13 @@ impl<'a> Parser<'a> {
 
         let is_all_ws = raw_text.chars().all(crate::util::is_whitespace);
 
-        if is_all_ws && self.options.whitespace != Whitespace::Pedantic {
-            return Ok(None);
+        if is_all_ws {
+            let keep_ws = self.options.whitespace == Whitespace::Pedantic
+                && doc.first_child(parent).is_none()
+                && self.remaining().starts_with("</");
+            if !keep_ws {
+                return Ok(None);
+            }
         }
 
         let mut processed = if self.options.process_entities {
