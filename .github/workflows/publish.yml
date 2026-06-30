@@ -62,3 +62,52 @@ jobs:
           else
             cargo publish --package tinyxml2-bench
           fi
+
+  release-assets:
+    name: Build and Attach Release Assets
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Release Binaries
+        run: cargo build --package tinyxml2-capi --release
+
+      - name: Package Assets (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          mkdir -p dist
+          cp target/release/libtinyxml2_capi.* dist/ 2>/dev/null || true
+          cp crates/tinyxml2-capi/include/tinyxml2.h dist/ 2>/dev/null || true
+          cd dist
+          tar -czf ../tinyxml2-capi-${{ matrix.os }}.tar.gz *
+
+      - name: Package Assets (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist
+          Copy-Item target/release/tinyxml2_capi.dll dist/ -ErrorAction SilentlyContinue
+          Copy-Item target/release/tinyxml2_capi.dll.lib dist/ -ErrorAction SilentlyContinue
+          Copy-Item target/release/tinyxml2_capi.lib dist/ -ErrorAction SilentlyContinue
+          Copy-Item crates/tinyxml2-capi/include/tinyxml2.h dist/ -ErrorAction SilentlyContinue
+          Compress-Archive -Path dist/* -DestinationPath tinyxml2-capi-windows-latest.zip
+
+      - name: Upload binaries to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            tinyxml2-capi-*.tar.gz
+            tinyxml2-capi-*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
