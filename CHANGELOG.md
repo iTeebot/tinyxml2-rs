@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.16] - 2026-06-30
+
+### Added
+
+- C FFI compatibility layer (`tinyxml2-capi` crate) with ~56 `extern "C"` functions
+- Opaque handle types: `TxDocument`, `TxPrinter` for safe FFI usage
+- C-compatible types: `TxNodeId`, `TxNodeType`, `TxError` enums
+- Document lifecycle: `tx_document_new`, `tx_document_free`, `tx_document_parse`, `tx_document_load_file`, `tx_document_save_file`, `tx_document_to_string`, `tx_document_clear`
+- DOM factory: `tx_new_element`, `tx_new_text`, `tx_new_comment`, `tx_new_declaration`, `tx_new_unknown`
+- DOM mutations: `tx_insert_end_child`, `tx_insert_first_child`, `tx_insert_after_child`, `tx_delete_child`, `tx_delete_children`, `tx_delete_node`
+- DOM navigation: `tx_parent`, `tx_first_child`, `tx_last_child`, `tx_prev_sibling`, `tx_next_sibling`, `tx_first_child_element`, `tx_next_sibling_element`, `tx_root_element`
+- Element & attribute helpers: `tx_element_name`, `tx_element_attribute`, `tx_element_set_attribute`, `tx_element_delete_attribute`, `tx_element_get_text`, `tx_element_set_text`
+- Typed attribute accessors: `tx_query_int_attribute`, `tx_query_bool_attribute`, `tx_query_double_attribute`, `tx_int_attribute`, `tx_bool_attribute`, `tx_double_attribute`
+- Streaming printer API: `tx_printer_new`, `tx_printer_new_compact`, `tx_printer_open_element`, `tx_printer_push_attribute`, `tx_printer_close_element`, `tx_printer_push_text`, `tx_printer_push_comment`, `tx_printer_result`, `tx_printer_clear`
+- Node inspection: `tx_node_type`, `tx_node_is_null`, `tx_node_value`, `tx_node_line`
+- Auto-generated C header via `cbindgen` at `include/tinyxml2.h`
+- Panic-safe FFI boundary with `catch_unwind` on all exported functions
+- `NodeId::from_raw_parts` and `NodeId::raw_parts` public FFI conversion methods on core crate
+
 ## [0.1.15] - 2026-06-30
 
 ### Added

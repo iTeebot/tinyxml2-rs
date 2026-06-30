@@ -10,7 +10,7 @@ homepage.workspace = true
 authors.workspace = true
 
 [dependencies]
-tinyxml2 = { path = "../tinyxml2", version = "0.1.15" }
+tinyxml2 = { path = "../tinyxml2", version = "0.1.16" }
 
 [dev-dependencies]
 criterion = { version = "0.5", features = ["html_reports"] }

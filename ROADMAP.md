@@ -19,8 +19,8 @@ one and is designed to produce a shippable, testable increment.
 | 2     | DOM Core                     | High       | ✅ **Completed** |
 | 3     | XML Parser                   | High       | ✅ **Completed** |
 | 4     | Writer / Serializer          | Medium     | ✅ **Completed** |
-| 5     | Visitor Pattern & Ergonomics | Medium     | 🔲 Planned     |
-| 6     | C API (`tinyxml2-capi`)      | Medium     | 🔲 Planned     |
+| 5     | Visitor Pattern & Ergonomics | Medium     | ✅ **Completed** |
+| 6     | C API (`tinyxml2-capi`)      | Medium     | ✅ **Completed** |
 | 7     | Testing & Benchmarks         | Medium     | 🔲 Planned     |
 | 8     | Documentation & Release      | Low        | 🔲 Planned     |
 
@@ -210,7 +210,7 @@ parse_document()
 
 ---
 
-## Phase 6: C API (`tinyxml2-capi` crate)
+## Phase 6: C API (`tinyxml2-capi` crate) ✅ **COMPLETED**
 
 > Expose the Rust library through a C-compatible FFI for drop-in replacement in C/C++ projects.
 
@@ -218,21 +218,22 @@ parse_document()
 
 ### Key Deliverables
 
-- [ ] **`extern "C"` function exports** — One C function per public API method. Naming convention:
-  `tinyxml2_document_new`, `tinyxml2_document_parse`, `tinyxml2_element_name`, etc.
-- [ ] **Opaque handle types** — C-side pointers (`*mut Document`, `*mut Element`) wrapped in
-  opaque structs. All access goes through FFI functions.
-- [ ] **Error codes** — C-compatible `enum TinyXml2Error` with integer values matching TinyXML2's
+- [x] **`extern "C"` function exports** — ~56 C functions covering document lifecycle, DOM
+  factory, tree mutation, navigation, element/attribute access, typed attribute queries,
+  streaming printer, and node inspection. Naming convention: `tx_document_new`, `tx_element_name`, etc.
+- [x] **Opaque handle types** — `TxDocument` (boxed `Document`) and `TxPrinter` (boxed
+  `XmlPrinter`) wrapped in opaque structs. `TxNodeId` as `#[repr(C)]` value type.
+- [x] **Error codes** — C-compatible `TxError` enum with integer values matching TinyXML2's
   error enum for maximum compatibility.
-- [ ] **Header generation** — Auto-generated `tinyxml2.h` header via [`cbindgen`](https://github.com/eyre-rs/cbindgen).
+- [x] **Header generation** — Auto-generated `tinyxml2.h` header via [`cbindgen`](https://github.com/eyre-rs/cbindgen).
   Configured in `cbindgen.toml` with C-style output.
-- [ ] **Build outputs** —
-  - Static library (`libtinyxml2_rs.a` / `tinyxml2_rs.lib`)
-  - Shared library (`libtinyxml2_rs.so` / `.dylib` / `.dll`)
-  - Configurable via Cargo features: `features = ["static", "shared"]`
-- [ ] **Memory safety contract** — All FFI functions validate non-null pointers. Null inputs
+- [x] **Build outputs** —
+  - Static library (`libtinyxml2_capi.a`)
+  - Shared library (`libtinyxml2_capi.dylib` / `.so` / `.dll`)
+  - Configured via `crate-type = ["staticlib", "cdylib"]`
+- [x] **Memory safety contract** — All FFI functions validate non-null pointers. Null inputs
   return error codes or no-op. No panics across FFI boundary (`catch_unwind` guards).
-- [ ] **Lifetime management** — `tinyxml2_document_free()`, `tinyxml2_string_free()` for
+- [x] **Lifetime management** — `tx_document_free()`, `tx_printer_free()` for
   heap-allocated returns. Clear ownership documentation in header comments.
 
 ### Estimated Test Count: 60–80 integration tests (C caller tests via `cc` crate in build script)
@@ -369,4 +370,4 @@ labeled `phase-N`. Each phase has a tracking issue with a checklist of deliverab
 
 ---
 
-*Last updated: 2025-06-29*
+*Last updated: 2026-06-30*

@@ -1,0 +1,43 @@
+# cbindgen configuration for tinyxml2-capi
+# https://github.com/mozilla/cbindgen/blob/master/docs.md
+
+language = "C"
+include_guard = "TINYXML2_RS_H"
+tab_width = 4
+style = "both"
+cpp_compat = true
+pragma_once = true
+documentation = true
+documentation_style = "doxy"
+documentation_length = "full"
+
+[defines]
+
+[export]
+include = [
+    "TxNodeId",
+    "TxNodeType",
+    "TxError",
+    "TX_NULL_NODE",
+]
+exclude = [
+    "TxDocument",
+    "TxPrinter",
+]
+
+[export.rename]
+
+[enum]
+rename_variants = "None"
+prefix_with_name = false
+
+[fn]
+sort_by = "None"
+
+[parse]
+parse_deps = false
+
+[parse.expand]
+
+[struct]
+rename_fields = "None"
