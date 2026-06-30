@@ -12,6 +12,8 @@ jobs:
   publish:
     name: Publish to Crates.io
     runs-on: ubuntu-latest
+    env:
+      CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -31,11 +33,11 @@ jobs:
         run: |
           VERSION=$(grep -m1 '^version = ' Cargo.toml | cut -d '"' -f2)
           echo "Detected version: $VERSION"
-          STATUS=$(curl -o /dev/null -s -w "%{http_code}" https://crates.io/api/v1/crates/tinyxml2/$VERSION)
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" -H "User-Agent: tinyxml2-rs-publish-ci (github-actions)" https://crates.io/api/v1/crates/tinyxml2/$VERSION)
           if [ "$STATUS" -eq 200 ]; then
             echo "tinyxml2@$VERSION is already published. Skipping."
           else
-            cargo publish --package tinyxml2 --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+            cargo publish --package tinyxml2
           fi
 
       - name: Sleep for 30 seconds for crates.io index propagation
@@ -44,19 +46,19 @@ jobs:
       - name: Publish tinyxml2-capi FFI crate
         run: |
           VERSION=$(grep -m1 '^version = ' Cargo.toml | cut -d '"' -f2)
-          STATUS=$(curl -o /dev/null -s -w "%{http_code}" https://crates.io/api/v1/crates/tinyxml2-capi/$VERSION)
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" -H "User-Agent: tinyxml2-rs-publish-ci (github-actions)" https://crates.io/api/v1/crates/tinyxml2-capi/$VERSION)
           if [ "$STATUS" -eq 200 ]; then
             echo "tinyxml2-capi@$VERSION is already published. Skipping."
           else
-            cargo publish --package tinyxml2-capi --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+            cargo publish --package tinyxml2-capi
           fi
 
       - name: Publish tinyxml2-bench benchmark crate
         run: |
           VERSION=$(grep -m1 '^version = ' Cargo.toml | cut -d '"' -f2)
-          STATUS=$(curl -o /dev/null -s -w "%{http_code}" https://crates.io/api/v1/crates/tinyxml2-bench/$VERSION)
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" -H "User-Agent: tinyxml2-rs-publish-ci (github-actions)" https://crates.io/api/v1/crates/tinyxml2-bench/$VERSION)
           if [ "$STATUS" -eq 200 ]; then
             echo "tinyxml2-bench@$VERSION is already published. Skipping."
           else
-            cargo publish --package tinyxml2-bench --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+            cargo publish --package tinyxml2-bench
           fi
