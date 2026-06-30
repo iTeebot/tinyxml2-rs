@@ -819,16 +819,17 @@ dependencies = [
 
 [[package]]
 name = "tinyxml2"
-version = "0.1.17"
+version = "1.0.0"
 dependencies = [
  "proptest",
  "serde",
  "serde_json",
+ "tinyxml2-capi",
 ]
 
 [[package]]
 name = "tinyxml2-bench"
-version = "0.1.17"
+version = "1.0.0"
 dependencies = [
  "cc",
  "criterion",
@@ -837,7 +838,7 @@ dependencies = [
 
 [[package]]
 name = "tinyxml2-capi"
-version = "0.1.17"
+version = "1.0.0"
 dependencies = [
  "cbindgen",
  "tinyxml2",
@@ -845,7 +846,7 @@ dependencies = [
 
 [[package]]
 name = "tinyxml2-cpp-helper"
-version = "0.1.17"
+version = "1.0.0"
 dependencies = [
  "cc",
 ]

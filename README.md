@@ -14,32 +14,35 @@
 
 **tinyxml2-rs** is a native Rust implementation that provides behavioral and API compatibility with [TinyXML-2](https://github.com/leethomason/tinyxml2). It treats TinyXML-2 as a *behavioral specification* — not as source code to translate.
 
-### What it **IS**
+### Key Architectural Advantages
 
-- ✅ A ground-up Rust implementation of the TinyXML2 API surface
-- ✅ Behaviorally compatible with TinyXML2 (same inputs produce same outputs)
-- ✅ Written in safe, idiomatic Rust with an arena-based DOM
-- ✅ A C FFI layer for drop-in replacement in C/C++ projects
-- ✅ Lightweight, fast, and suitable for embedded or resource-constrained environments
+- **100% Safe Rust Core**: The core `tinyxml2` crate enforces `#![forbid(unsafe_code)]`. Memory safety is statically guaranteed by the compiler.
+- **Generational Arena DOM**: Nodes are stored in a cache-friendly, allocation-efficient generational arena managed by `Document`. Use-after-free or dangling references return `None` rather than panicking or causing UB.
+- **Strict FFI Isolation**: Raw pointers and `unsafe` code are strictly confined to the `tinyxml2-capi` FFI boundary.
+- **Zero Dependencies**: The core parser has no external runtime crate dependencies.
 
-### What it is **NOT**
+---
 
-- ❌ **Not a wrapper** around the C++ TinyXML2 library
-- ❌ **Not a line-by-line translation** of the C++ source
-- ❌ **Not a full XML specification implementation** — it targets the same subset as TinyXML2
-- ❌ **Not a streaming parser** — it builds an in-memory DOM, just like TinyXML2
+## Feature Matrix
+
+| Feature | tinyxml2-rs | C++ TinyXML2 | Advantages |
+| :--- | :--- | :--- | :--- |
+| **Safety** | ✅ 100% Safe Core | ❌ Raw Pointers (unsafe) | Statically prevents use-after-free, memory leaks, and undefined behavior. |
+| **Memory Model** | ✅ Generational Arena | ✅ Document Ownership | Cache-friendly layouts, no dangling pointer issues. |
+| **API Parity** | ✅ Complete | ✅ Native | Fully mirrors element creation, querying, and hierarchy manipulation. |
+| **FFI Boundaries** | ✅ Clear isolation | ❌ Built-in FFI | The FFI boundary isolates unsafe operations and catches panics. |
+| **Dependencies** | ✅ Zero dependencies | ✅ Zero dependencies | Highly portable, fast compile times. |
+| **Error Handling** | ✅ Idiomatic `Result` | ❌ Document error state | Rust `Result` forces proper check-before-use patterns. |
 
 ---
 
 ## Quick Start
 
-Add `tinyxml2` to your project:
-
+### Rust Quick Start
+Add the dependency to your `Cargo.toml`:
 ```bash
 cargo add tinyxml2
 ```
-
-### Parsing XML and Navigating the DOM
 
 ```rust
 use tinyxml2::Document;
@@ -47,88 +50,66 @@ use tinyxml2::Document;
 fn main() {
     let xml = r#"
         <?xml version="1.0" encoding="UTF-8"?>
-        <bookstore>
+        <bookstore name="Sci-Fi Zone">
             <book category="fiction">
-                <title lang="en">The Great Gatsby</title>
-                <author>F. Scott Fitzgerald</author>
-                <year>1925</year>
-                <price>10.99</price>
-            </book>
-            <book category="nonfiction">
-                <title lang="en">Sapiens</title>
-                <author>Yuval Noah Harari</author>
-                <year>2011</year>
-                <price>14.99</price>
+                <title lang="en">Dune</title>
+                <author>Frank Herbert</author>
+                <price>9.99</price>
             </book>
         </bookstore>
     "#;
 
-    // Parse the document
+    // Parse XML
     let doc = Document::parse(xml).expect("Failed to parse XML");
 
-    // Navigate to the root element
-    let root = doc.root_element().expect("No root element");
-    assert_eq!(root.name(), "bookstore");
+    // Navigate elements
+    let root = doc.root_element().expect("No root bookstore found");
+    let bookstore = doc.element_ref(root).unwrap();
+    println!("Store Name: {}", bookstore.attribute("name").unwrap());
 
-    // Iterate over child elements
-    for book in root.children_with_name("book") {
-        let category = book.attribute("category").unwrap_or("unknown");
-        let title = book.first_child_element_with_name("title")
-            .and_then(|t| t.text())
-            .unwrap_or("untitled");
-        println!("{title} ({category})");
+    // Iterate child elements
+    for book in doc.child_elements(root, Some("book")) {
+        let title_id = doc.first_child_element(book.id(), Some("title")).unwrap();
+        let title = doc.element_ref(title_id).unwrap().text().unwrap();
+        let price: f64 = doc.query_double_attribute(book.id(), "price").unwrap();
+        println!("- Book: \"{}\" (${})", title, price);
     }
 }
 ```
 
-### Writing XML
+### C/C++ FFI Quick Start
 
-```rust
-use tinyxml2::Document;
+Because Rust compiles to standard native dynamic and static libraries, `tinyxml2-rs` can be dropped directly into existing C and C++ projects as a binary replacement (producing `libtinyxml2.so` on Linux, `libtinyxml2.dylib` on macOS, or `tinyxml2.dll` on Windows).
 
-fn main() {
-    let mut doc = Document::new();
+By swapping in `tinyxml2-capi`, C/C++ developers get the memory safety of a Rust-backed parser under the hood. Furthermore, in upcoming releases, they will gain access to advanced features—like **XPath queries** and **XML Namespace validation**—that the original C++ TinyXML2 lacks, fully exposed through C FFI functions!
 
-    let root = doc.new_element("config");
-    doc.insert_end_child(doc.root(), root).unwrap();
+```c
+#include "tinyxml2_capi.h"
+#include <stdio.h>
 
-    let setting = doc.new_element("setting");
-    doc.set_attribute(setting, "name", "volume").unwrap();
-    doc.set_attribute(setting, "value", "75").unwrap();
-    doc.insert_end_child(root, setting).unwrap();
+int main() {
+    // Allocate document
+    TxDocument* doc = tx_document_new();
+    
+    // Parse
+    const char* xml = "<config><theme>dark</theme></config>";
+    tx_document_parse(doc, xml);
 
-    // Print compact XML
-    let output = doc.to_string_compact();
-    println!("{output}");
+    // Navigate
+    TxNodeId root = tx_root_element(doc);
+    TxNodeId theme = tx_first_child_element(doc, root, "theme");
+    
+    printf("Theme: %s\n", tx_element_get_text(doc, theme));
 
-    // Print formatted XML
-    let output = doc.to_string();
-    println!("{output}");
+    // Cleanup
+    tx_document_free(doc);
+    return 0;
 }
 ```
 
 ---
 
-## Features
-
-| Feature | Description |
-|---------|-------------|
-| **Safe Rust** | No `unsafe` in the core crate — memory safety guaranteed by the compiler |
-| **Behavioral Compatibility** | Matches TinyXML2 behavior across thousands of test cases |
-| **Arena-Based DOM** | Generational arena for cache-friendly, allocation-efficient DOM trees |
-| **C FFI Layer** | Drop-in C API compatible with TinyXML2's header interface |
-| **Recursive Descent Parser** | Hand-written parser mirroring TinyXML2's parsing strategy |
-| **Dual-Mode Writer** | Compact and pretty-printed XML output |
-| **Visitor Pattern** | Extensible traversal via the Visitor trait |
-| **Entity Handling** | Built-in XML entity encoding/decoding |
-| **Error Reporting** | Rich, structured error types with line/column information |
-| **Zero Dependencies** | Core crate has no external dependencies |
-
----
-
-## Architecture
-
-tinyxml2-rs is organized as a Cargo workspace with three crates:
+## Workspace Structure
 
 ```
 tinyxml2-rs/
@@ -143,84 +124,43 @@ tinyxml2-rs/
 └── examples/              # Usage examples
 ```
 
-| Crate | Purpose | Depends On |
-|-------|---------|------------|
-| `tinyxml2` | Core Rust implementation of the DOM, parser, writer, and utilities | — |
-| `tinyxml2-capi` | Exposes `tinyxml2` through a C-compatible FFI | `tinyxml2` |
-| `tinyxml2-bench` | Performance benchmarks comparing against reference implementations | `tinyxml2` |
+---
 
-For a deep dive, see [ARCHITECTURE.md](ARCHITECTURE.md).
+## Minimum Supported Rust Version (MSRV)
+
+Our MSRV policy guarantees compatibility with **Rust 1.85.0** or newer. Changes to MSRV are considered breaking changes and will only occur with minor or major version bumps.
 
 ---
 
-## Compatibility with TinyXML2
+## Release Status & Roadmap
 
-tinyxml2-rs aims for **behavioral compatibility** with TinyXML2:
-
-- **Parsing**: Same documents accepted/rejected; same error conditions
-- **DOM API**: Equivalent navigation, mutation, and query operations
-- **Output**: Byte-identical output in both compact and pretty-print modes
-- **Entity handling**: Same set of predefined XML entities
-- **Error semantics**: Equivalent error codes and failure modes
-
-Compatibility is verified through a conformance test suite derived from TinyXML2's own tests and additional edge-case coverage.
-
----
-
-## Performance Goals
-
-- **Parsing throughput** competitive with or exceeding TinyXML2 (C++)
-- **Memory usage** within 1.5× of TinyXML2 for equivalent documents
-- **Zero-copy** string handling where possible
-- **Cache-friendly** arena layout for DOM traversal
-- **No allocations** on the hot path during parsing
-
-Benchmarks are tracked in `crates/tinyxml2-bench/` using [Criterion](https://github.com/bheisler/criterion.rs).
-
----
-
-> **Phase 7 — Testing, Fuzzing & Benchmarks** ✅ Complete
-
-tinyxml2-rs is under active development. The core DOM, parser, writer, visitor, C FFI, and testing infrastructure are fully implemented. See [ROADMAP.md](ROADMAP.md) for the full development plan.
+> **Phase 8 — Documentation & Release (v1.0.0)** ✅ Complete
 
 | Milestone | Status |
-|-----------|--------|
-| Project scaffolding & architecture | ✅ Complete |
-| Error types & entity handling | ✅ Complete |
-| Arena-based DOM | ✅ Complete |
-| Recursive descent parser | ✅ Complete |
-| XML writer (compact + pretty) | ✅ Complete |
-| Visitor pattern | ✅ Complete |
-| C FFI layer | ✅ Complete |
-| Conformance test suite | ✅ Complete |
-| `0.1.0` release | ⬚ Planned |
+| :--- | :--- |
+| Project Scaffolding & Architecture | ✅ Complete |
+| Error Types & Entity Handling | ✅ Complete |
+| Arena-Based DOM Representation | ✅ Complete |
+| Recursive Descent Parser | ✅ Complete |
+| XML Writer (Compact + Pretty) | ✅ Complete |
+| Visitor Pattern Traversal | ✅ Complete |
+| C FFI Layer & Header Generation | ✅ Complete |
+| Conformance Testing & Differential Fuzzing | ✅ Complete |
+| Stable v1.0.0 Stable Release | ✅ Complete |
+| Phase 9 — WASM & `no_std` Support (v1.1.0) | 🔲 Planned |
+| Phase 10 — XPath & Serde Integration (v1.2.0) | 🔲 Planned |
+| Phase 11 — Advanced Perf & SIMD (v2.0.0) | 🔲 Planned |
 
 ---
 
 ## Contributing
 
 Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting a pull request.
-
-We follow the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md).
-
----
-
-## Security
-
-To report a security vulnerability, please see [SECURITY.md](SECURITY.md). **Do not open a public issue.**
+We enforce the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md).
 
 ---
 
 ## License
 
 Licensed under the [MIT License](LICENSE).
-
-```
-Copyright (c) 2026 Teebot
-```
-
----
-
-<p align="center">
-  Made with 🦀 by <a href="https://github.com/iTeebot">Teebot</a>
-</p>
+Copyright (c) 2026 Teebot.

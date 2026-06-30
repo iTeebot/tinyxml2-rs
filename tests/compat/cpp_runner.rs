@@ -14,7 +14,37 @@ fn find_cpp_helper_binary() -> PathBuf {
     } else {
         "tinyxml2-cpp-helper"
     };
-    exe_path.join(binary_name)
+    let helper_path = exe_path.join(binary_name);
+
+    if !helper_path.exists() {
+        let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap_or_else(|_| ".".to_string());
+        let workspace_root = Path::new(&manifest_dir)
+            .ancestors()
+            .nth(2)
+            .unwrap_or_else(|| Path::new("."));
+
+        let mut cmd = Command::new("cargo");
+        cmd.arg("build")
+            .arg("--bin")
+            .arg("tinyxml2-cpp-helper")
+            .current_dir(workspace_root);
+
+        // If running in release mode, build release helper
+        if !exe_path.to_string_lossy().contains("debug") {
+            cmd.arg("--release");
+        }
+
+        let status = cmd.status();
+        if let Ok(s) = status {
+            if !s.success() {
+                eprintln!("Warning: Failed to compile tinyxml2-cpp-helper via cargo build.");
+            }
+        } else if let Err(e) = status {
+            eprintln!("Warning: Could not invoke cargo build: {e}");
+        }
+    }
+
+    helper_path
 }
 
 pub fn run_cpp_reference(xml_path: &Path, whitespace_mode: &str) -> String {
