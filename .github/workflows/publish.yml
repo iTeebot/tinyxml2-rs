@@ -35,3 +35,6 @@ jobs:
 
       - name: Publish tinyxml2-capi FFI crate
         run: cargo publish --package tinyxml2-capi --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+
+      - name: Publish tinyxml2-bench benchmark crate
+        run: cargo publish --package tinyxml2-bench --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
