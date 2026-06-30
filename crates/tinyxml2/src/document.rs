@@ -120,8 +120,11 @@ impl Document {
     pub fn parse_str(&mut self, xml: &str) -> Result<()> {
         self.clear();
 
+        // Truncate at first null byte to match C++ null-terminated behavior
+        let truncated_xml = xml.split('\0').next().unwrap_or("");
+
         // Detect and skip BOM
-        let (xml_after_bom, had_bom) = crate::util::strip_bom(xml);
+        let (xml_after_bom, had_bom) = crate::util::strip_bom(truncated_xml);
         self.has_bom = had_bom;
 
         let mut parser = Parser::new(xml_after_bom, self.options.clone());

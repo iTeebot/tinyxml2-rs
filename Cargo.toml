@@ -5,10 +5,11 @@ members = [
     "crates/tinyxml2",
     "crates/tinyxml2-capi",
     "crates/tinyxml2-bench",
+    "crates/tinyxml2-cpp-helper",
 ]
 
 [workspace.package]
-version = "0.1.16"
+version = "0.1.17"
 edition = "2024"
 rust-version = "1.85.0"
 license = "MIT"

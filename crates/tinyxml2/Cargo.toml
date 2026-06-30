@@ -15,6 +15,13 @@ readme = "../../README.md"
 [dependencies]
 
 [dev-dependencies]
+proptest = "1.5"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", features = ["unbounded_depth"] }
+
+[[test]]
+name = "compat"
+path = "../../tests/compat/harness.rs"
 
 [lints]
 workspace = true

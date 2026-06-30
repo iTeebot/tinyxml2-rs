@@ -1,0 +1,39 @@
+[package]
+name = "tinyxml2-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata.cargo-fuzz]
+cargo = "cargo"
+
+[dependencies]
+libfuzzer-sys = "0.4"
+tinyxml2 = { path = "../crates/tinyxml2" }
+
+[[bin]]
+name = "parse_fuzz"
+path = "fuzz_targets/parse_fuzz.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "roundtrip_fuzz"
+path = "fuzz_targets/roundtrip_fuzz.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "serialize_fuzz"
+path = "fuzz_targets/serialize_fuzz.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "streaming_fuzz"
+path = "fuzz_targets/streaming_fuzz.rs"
+test = false
+doc = false
+
+[workspace]
+# Empty workspace to isolate fuzz crate from root workspace

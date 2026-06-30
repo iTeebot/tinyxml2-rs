@@ -5,7 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.1.17] - 2026-07-01
+
+### Added
+
+- Compatibility Testing Harness: Differential testing comparing `tinyxml2-rs` DOMs and errors against C++ TinyXML2 reference runner
+- Property-Based Testing: Property verification via `proptest` for DOM navigation consistency, clone independence, and entity round-tripping
+- Curated XML Corpus: 100+ files categorized under `valid`, `invalid`, and `unicode` structures
+- Fuzz Testing Infrastructure: `cargo-fuzz` setup with 4 targets (`parse_fuzz`, `roundtrip_fuzz`, `serialize_fuzz`, `streaming_fuzz`)
+- Criterion Benchmarking Suite: Statistically rigorous benchmarks for parse speeds (1KB, 100KB, 10MB), serialization (compact and pretty), DOM traversal, and side-by-side C++ comparison
+- Nightly and Push CI/CD workflows for automated fuzz scheduling and benchmark stats tracking
 
 ## [0.1.16] - 2026-06-30
 

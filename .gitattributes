@@ -1,0 +1,2 @@
+# Force all XML files to have LF (Unix) line endings on checkout
+*.xml text eol=lf
