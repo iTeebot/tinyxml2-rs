@@ -10,13 +10,17 @@ homepage.workspace = true
 authors.workspace = true
 keywords = ["xml", "ffi", "c-api", "tinyxml2"]
 categories = ["external-ffi-bindings"]
+readme = "../../README.md"
 
 [lib]
 # Produce both static and shared C libraries
-crate-type = ["cdylib", "staticlib"]
+crate-type = ["cdylib", "staticlib", "lib"]
 
 [dependencies]
-tinyxml2 = { path = "../tinyxml2", version = "0.1.15" }
+tinyxml2 = { path = "../tinyxml2", version = "0.1.16" }
+
+[build-dependencies]
+cbindgen = "0.28"
 
 # Override workspace lint — unsafe is required for FFI
 [lints.rust]
@@ -30,3 +34,4 @@ must_use_candidate = "allow"
 missing_errors_doc = "allow"
 missing_panics_doc = "allow"
 missing_safety_doc = "allow"
+

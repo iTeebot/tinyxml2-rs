@@ -53,9 +53,35 @@ impl NodeId {
 
     /// Returns the generation. Used internally for validity checks.
     #[inline]
-    #[allow(dead_code)] // Will be used in Phase 2 (DOM)
+    #[allow(dead_code)]
     pub(crate) const fn generation(self) -> u32 {
         self.generation
+    }
+
+    /// Creates a `NodeId` from raw index and generation values.
+    ///
+    /// This is primarily intended for FFI boundaries where node IDs need to be
+    /// converted to/from C-compatible representations.
+    ///
+    /// # Correctness
+    ///
+    /// The caller is responsible for providing valid index/generation pairs that
+    /// were originally obtained from the arena. Using arbitrary values may result
+    /// in accessing wrong nodes or getting `None` from arena lookups.
+    #[inline]
+    #[must_use]
+    pub const fn from_raw_parts(index: u32, generation: u32) -> Self {
+        Self { index, generation }
+    }
+
+    /// Returns the raw index and generation values of this `NodeId`.
+    ///
+    /// This is primarily intended for FFI boundaries where node IDs need to be
+    /// converted to C-compatible representations.
+    #[inline]
+    #[must_use]
+    pub const fn raw_parts(self) -> (u32, u32) {
+        (self.index, self.generation)
     }
 }
 
