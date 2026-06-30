@@ -68,7 +68,8 @@ fn comparison_benchmarks(c: &mut Criterion) {
     group.bench_function("print_compact_cpp", |b| {
         b.iter(|| {
             let mut len = 0;
-            let ptr = unsafe { cpp_print_compact(black_box(cpp_doc_ptr), std::ptr::addr_of_mut!(len)) };
+            let ptr =
+                unsafe { cpp_print_compact(black_box(cpp_doc_ptr), std::ptr::addr_of_mut!(len)) };
             assert!(!ptr.is_null());
             unsafe { cpp_free_str(ptr) };
         });

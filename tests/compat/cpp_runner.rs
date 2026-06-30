@@ -30,7 +30,8 @@ pub fn run_cpp_reference(xml_path: &Path, whitespace_mode: &str) -> String {
         .output()
         .unwrap_or_else(|e| panic!("Failed to run C++ helper at {helper_path:?}: {e}"));
 
-    assert!(output.status.success(), 
+    assert!(
+        output.status.success(),
         "C++ helper failed with exit code {:?}. Stderr:\n{}",
         output.status.code(),
         String::from_utf8_lossy(&output.stderr)

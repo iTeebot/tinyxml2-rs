@@ -102,14 +102,17 @@ fn are_errors_equivalent(rust: &str, cpp: &str) -> bool {
     r_parse && c_parse
 }
 
-fn run_differential_test(xml_path: &Path, whitespace: Whitespace) {
+fn run_differential_test(xml_path: &Path, whitespace: Whitespace, max_depth: Option<u32>) {
     let ws_str = match whitespace {
         Whitespace::Preserve => "preserve",
         Whitespace::Collapse => "collapse",
         Whitespace::Pedantic => "pedantic",
     };
 
-    let opts = ParseOptions::new().with_whitespace(whitespace);
+    let mut opts = ParseOptions::new().with_whitespace(whitespace);
+    if let Some(depth) = max_depth {
+        opts = opts.with_max_depth(depth);
+    }
     let mut doc = Document::with_options(opts);
     println!("Testing: {xml_path:?} (ws: {ws_str})");
 
@@ -145,7 +148,8 @@ fn run_differential_test(xml_path: &Path, whitespace: Whitespace) {
             }
 
             // Rust parsing failed, C++ must also fail
-            assert!(cpp_json_str.trim().starts_with("{\"error\":"), 
+            assert!(
+                cpp_json_str.trim().starts_with("{\"error\":"),
                 "Rust failed with error {rust_err:?} but C++ succeeded on {xml_path:?} (ws_mode: {ws_str}).\nC++ Output:\n{cpp_json_str}"
             );
 
@@ -198,9 +202,9 @@ fn test_valid_corpus_differential() {
     let files = get_all_xml_files(&root.join("tests/corpus/valid"));
     assert!(!files.is_empty(), "No files found in tests/corpus/valid");
     for file in &files {
-        run_differential_test(file, Whitespace::Preserve);
-        run_differential_test(file, Whitespace::Collapse);
-        run_differential_test(file, Whitespace::Pedantic);
+        run_differential_test(file, Whitespace::Preserve, Some(150));
+        run_differential_test(file, Whitespace::Collapse, Some(150));
+        run_differential_test(file, Whitespace::Pedantic, Some(150));
     }
 }
 
@@ -210,8 +214,8 @@ fn test_invalid_corpus_differential() {
     let files = get_all_xml_files(&root.join("tests/corpus/invalid"));
     assert!(!files.is_empty(), "No files found in tests/corpus/invalid");
     for file in &files {
-        // Run with Preserve (which is the default)
-        run_differential_test(file, Whitespace::Preserve);
+        // Run with Preserve (which is the default) and a depth limit of 80 to prevent stack overflows
+        run_differential_test(file, Whitespace::Preserve, Some(80));
     }
 }
 
@@ -221,8 +225,8 @@ fn test_unicode_corpus_differential() {
     let files = get_all_xml_files(&root.join("tests/corpus/unicode"));
     assert!(!files.is_empty(), "No files found in tests/corpus/unicode");
     for file in &files {
-        run_differential_test(file, Whitespace::Preserve);
-        run_differential_test(file, Whitespace::Collapse);
+        run_differential_test(file, Whitespace::Preserve, Some(150));
+        run_differential_test(file, Whitespace::Collapse, Some(150));
     }
 }
 
