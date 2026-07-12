@@ -192,7 +192,6 @@ fn find_workspace_root() -> Option<PathBuf> {
             return Some(dir);
         }
         {
-            // lines suggested by clippy
             let parent = dir.parent()?;
             dir = parent.to_path_buf();
         }
