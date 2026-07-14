@@ -317,6 +317,7 @@ Enable tinyxml2-rs to run in resource-constrained embedded environments and web 
 - [x] **no_std compatibility** — Feature-gate standard library dependencies and use the `alloc` crate for all dynamic memory allocations (`Vec`, `String`, `Box`). Target: `#![no_std]` with `extern crate alloc`.
 - [x] **WASM target support** — Validate the core crate on `wasm32-unknown-unknown` and `wasm32-wasip1`. JavaScript bindings are intentionally left to the host application boundary; see `docs/architecture/wasm.md`.
 - [x] **Abstract I/O** — Gate file/stream writers behind the `std` feature and keep the core parser, DOM, and string serialization available without `std::io::Write`.
+- [x] **C/C++ FFI WASM Support** (v1.1.1) — Support compiling and linking the FFI bindings (`tinyxml2-capi`) on `wasm32-unknown-unknown` and `wasm32-wasip1` targets for C/C++ WebAssembly integration.
 
 ---
 
