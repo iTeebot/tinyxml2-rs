@@ -90,7 +90,10 @@ environment.
 
 ## C and C++ WebAssembly Support
 
-The C FFI compatibility layer (`tinyxml2-capi`) compiles to WebAssembly targets out of the box, allowing C and C++ projects compiled to WebAssembly (via Emscripten or WASI SDK) to use `tinyxml2-rs` as a drop-in replacement.
+The C FFI compatibility layer (`tinyxml2-capi`) compiles to WebAssembly targets out of the box. C and C++ projects compiled to WebAssembly (via Emscripten or WASI SDK) can link against this compiled Rust artifact as a drop-in replacement.
+
+> [!NOTE]
+> The project's CI validates compiling the Rust artifacts (`libtinyxml2_capi.a` and `tinyxml2_capi.wasm`) for WASM targets. Compiling and linking the final C/C++ application remains the responsibility of the consumer's C toolchain (e.g. Emscripten or WASI SDK).
 
 When compiled to `wasm32-unknown-unknown` or `wasm32-wasip1`, it generates:
 - A WebAssembly binary (`tinyxml2_capi.wasm`)
@@ -137,7 +140,7 @@ To compile for a standalone WASI runtime (e.g., Wasmtime) using the WASI SDK:
 
 ### ABI and Memory Considerations
 - **Shared Memory**: Since Rust and C/C++ compile into a single WebAssembly module when linked statically, they share the same linear memory and allocator (supplied by the C runtime or Rust's target).
-- **String Lifetimes**: Pointers returned by `tx_document_to_string` or element/attribute getters point to UTF-8 strings in the shared WASM heap. These must not be read after calling mutating document functions or freeing the document.
+- **String Lifetimes**: Pointers returned by `tx_document_to_string`, `tx_element_name`, or other getters returning `*const c_char` point to UTF-8 C-strings borrowed from the `TxDocument`/`TxPrinter`-owned `CString` caches. Callers **must not free** these pointers. They become invalid as soon as the document is modified (mutated) or when the owning document/printer wrapper is freed.
 
 ## Validation
 
