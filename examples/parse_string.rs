@@ -28,7 +28,11 @@ fn try_parse(xml: &str, desc: &str) {
                 } => {
                     println!("  cause:  expected </{expected}>, found </{found}> at line {line}");
                 }
-                XmlError::Parse { kind, line, message } => {
+                XmlError::Parse {
+                    kind,
+                    line,
+                    message,
+                } => {
                     println!("  cause:  {kind:?} error at line {line}");
                     if let Some(msg) = message {
                         println!("  detail: {msg}");
