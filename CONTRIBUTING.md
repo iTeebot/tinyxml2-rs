@@ -181,12 +181,18 @@ Fuzz testing feeds random/mutated inputs to find crashes, panics, and invariant 
 
 #### Setup
 
+Fuzz targets require a **nightly Rust toolchain** and a **C++11-capable compiler** (GCC or Clang) for the sanitizer runtime.
+
 ```bash
+# Install the nightly toolchain (one-time)
+rustup toolchain install nightly
+
+# Optionally, set nightly as the default for this project
+rustup override set nightly
+
 # Install cargo-fuzz (one-time)
 cargo install cargo-fuzz
 ```
-
-`cargo fuzz` manages its own nightly toolchain via `rustup`. Make sure `rustup` is installed.
 
 #### Fuzz Targets
 
@@ -234,14 +240,14 @@ done
 
 #### Reproducing a Crash
 
-When a fuzzer finds a crash, it saves the crashing input as an artifact in `fuzz/artifacts/<target>/`.
+When a fuzzer finds a crash, it saves the crashing input as an artifact in `artifacts/<target>/`.
 
 ```bash
 # Reproduce the crash with the saved artifact
-cargo fuzz run parse_fuzz fuzz/artifacts/parse_fuzz/<crash-file>
+cargo fuzz run parse_fuzz artifacts/parse_fuzz/<crash-file>
 
-# To minimize the crashing input (find the smallest input that still triggers the bug)
-cargo fuzz cmin parse_fuzz fuzz/artifacts/parse_fuzz/
+# Minimize the crashing input (find the smallest input that still triggers the bug)
+cargo fuzz tmin parse_fuzz artifacts/parse_fuzz/<crash-file>
 ```
 
 The output will show the panic message, stack trace, and exact input bytes that triggered the crash. Use this to write a minimal reproduction as a unit test, then fix the bug.
